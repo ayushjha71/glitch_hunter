@@ -12,6 +12,8 @@ namespace GlitchHunter.Handler
     public class ShootingHandler : MonoBehaviour
     {
         [SerializeField]
+        private AudioClip fireAudioClip;
+        [SerializeField]
         private Crosshair crossHair;
         public Transform gunContainerTransform;
         [Header("Weapon Settings")]
@@ -102,13 +104,14 @@ namespace GlitchHunter.Handler
             if (_isReloading)
                 return;
             // Auto fire when holding mouse button
-            if (Input.GetKey(KeyCode.Mouse0) && Time.time >= _nextTimeToFire && canShoot)
+            if (Input.GetKey(KeyCode.Mouse0) && Time.time >= _nextTimeToFire && canShoot && GameManager.Instance.IsEquipped)
             {
                 _nextTimeToFire = Time.time + fireRate;
                 Shoot();
+
             }
         }
-
+        
         private void Shoot()
         {
             crossHair.SetScale(CrosshairScale.Shoot, 1);
@@ -129,13 +132,14 @@ namespace GlitchHunter.Handler
             if (muzzleFlash != null)
             {
                 muzzleFlash.Play();
+                GameManager.Instance.AudioSource.PlayOneShot(fireAudioClip);
             }
 
             // Raycast
             if (Physics.Raycast(_playerCamera.transform.position, _playerCamera.transform.forward,
                 out RaycastHit hit, range, shootableMask))
             {
-                hit.transform.GetComponent<ShootingNPCHealthHandler>()?.TakeDamage(damage);
+                hit.transform.GetComponent<EnemyHealthHandler>()?.TakeDamage(damage);
                 Debug.Log("Hit" + hit.transform.gameObject.name);
 
                 // Play impact effect

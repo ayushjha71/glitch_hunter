@@ -73,7 +73,7 @@ namespace GlitchHunter.StateMachine
 
         public bool IsDead()
         {
-            ShootingNPCHealthHandler npcHealth = npc.GetComponent<ShootingNPCHealthHandler>();
+            EnemyHealthHandler npcHealth = npc.GetComponent<EnemyHealthHandler>();
             return npcHealth != null && npcHealth.IsDead();
         }
 

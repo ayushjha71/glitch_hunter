@@ -5,10 +5,10 @@ namespace GlitchHunter.Handler
 {
     public class Key : MonoBehaviour
     {
-        private EnemySpawnHandler spawner;
+        private EnemySpawnManager spawner;
         private int waveIndex;
 
-        public void Initialize(EnemySpawnHandler enemySpawner, int wave)
+        public void Initialize(EnemySpawnManager enemySpawner, int wave)
         {
             spawner = enemySpawner;
             waveIndex = wave;

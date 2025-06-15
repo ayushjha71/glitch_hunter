@@ -231,7 +231,7 @@ namespace StarterAssets
 			{
 				// move
 				inputDirection = transform.right * _input.move.x + transform.forward * _input.move.y;
-				//crosshair.SetScale(CrosshairScale.Walk, 2);
+				crosshair.SetScale(CrosshairScale.Walk, 2);
             }
 
 			// move the player
@@ -246,7 +246,7 @@ namespace StarterAssets
             if (Input.GetKeyDown(KeyCode.Space) && !Grounded)
             {
                 _isFlying = true;
-               // crosshair.SetScale(CrosshairScale.Walk, 2);
+                crosshair.SetScale(CrosshairScale.Walk, 2);
                 Gravity = 0f;
             }
             // Stop flying when space is released

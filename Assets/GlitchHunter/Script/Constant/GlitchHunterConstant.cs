@@ -7,7 +7,7 @@ namespace GlitchHunter.Constant
     public static class GlitchHunterConstant
     {
         public static Action<bool> OnShowPlayerUI;
-        public static Action<bool, string> OnShowPrompt;
+        public static Action<string> OnShowPrompt;
         public static Action<int, int> OnUpdateAmmoUI;
         public static Action<float> OnReloadSliderValue;
         public static Action<float> OnUpdateHealthSlider;

@@ -174,40 +174,19 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: -927199367670048503, guid: 046c8cc9457e1435797832113fdf8f28, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 2179859608807215881}
-    - targetCorrespondingSourceObject: {fileID: -927199367670048503, guid: 046c8cc9457e1435797832113fdf8f28, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 1734772871606192423}
     - targetCorrespondingSourceObject: {fileID: -927199367670048503, guid: 046c8cc9457e1435797832113fdf8f28, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2312595031256711818}
+    - targetCorrespondingSourceObject: {fileID: -927199367670048503, guid: 046c8cc9457e1435797832113fdf8f28, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1133156677763285061}
   m_SourcePrefab: {fileID: 100100000, guid: 046c8cc9457e1435797832113fdf8f28, type: 3}
 --- !u!1 &3337819947553588716 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -927199367670048503, guid: 046c8cc9457e1435797832113fdf8f28, type: 3}
   m_PrefabInstance: {fileID: 6733933231624314085}
   m_PrefabAsset: {fileID: 0}
---- !u!135 &2179859608807215881
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3337819947553588716}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0.23}
 --- !u!54 &1734772871606192423
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -232,7 +211,7 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 2
 --- !u!114 &2312595031256711818
@@ -248,8 +227,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 1734772871606192423}
-  collider: {fileID: 2179859608807215881}
-  gunContainerTransform: {fileID: 0}
+  collider: {fileID: 0}
   pickupRange: 5
   dropForwardForce: 5
   dropUpwardForce: 5
+--- !u!65 &1133156677763285061
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3337819947553588716}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.30416107, y: 0.33321953, z: 1.220581}
+  m_Center: {x: 0.026828766, y: 0.043860435, z: 0.38000488}

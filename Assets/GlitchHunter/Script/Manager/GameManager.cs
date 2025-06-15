@@ -1,3 +1,4 @@
+using GlitchHunter.Constant;
 using UnityEngine;
 
 namespace GlitchHunter.Manager
@@ -19,6 +20,7 @@ namespace GlitchHunter.Manager
         }
 
         [HideInInspector] public bool IsGameStarted = false;
+        [HideInInspector] public bool IsEquipped = false;
         [HideInInspector] public AudioSource AudioSource;
 
 
@@ -45,12 +47,9 @@ namespace GlitchHunter.Manager
 
         private void Update()
         {
-            mGameTime += Time.deltaTime;
-
-            if(mGameTime == 10)
+            if (IsGameStarted)
             {
-               
-                Debug.Log("Player Spawned");
+                mGameTime += Time.deltaTime;
             }
 
             if (mGameTime >= gameDuration)
@@ -69,6 +68,7 @@ namespace GlitchHunter.Manager
         public void EndGame()
         {
             Debug.LogError("Game Over");
+            GlitchHunterConstant.OnGameOver?.Invoke();
             IsGameStarted = false;
         }
     }

@@ -5,9 +5,9 @@ namespace GlitchHunter.Handler.Enemy
 {
     public class EnemyCleanup : MonoBehaviour
     {
-        private EnemySpawnHandler spawner;
+        private EnemySpawnManager spawner;
 
-        public void Initialize(EnemySpawnHandler enemySpawner)
+        public void Initialize(EnemySpawnManager enemySpawner)
         {
             spawner = enemySpawner;
         }

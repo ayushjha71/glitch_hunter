@@ -2601,9 +2601,9 @@ GameObject:
   - component: {fileID: 4114180397858224311}
   - component: {fileID: 712428808592230647}
   - component: {fileID: 8356483455104476794}
-  - component: {fileID: 1868214855302392569}
+  - component: {fileID: 7601276390857039717}
   m_Layer: 6
-  m_Name: Ugg
+  m_Name: Ugg_Shooting_Enemy
   m_TagString: Target
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2787,7 +2787,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ab01e84b40e676458bd10bd06c01b7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerTransform: {fileID: 0}
   agent: {fileID: 4114180397858224311}
   animator: {fileID: 431280034300401484}
 --- !u!136 &8356483455104476794
@@ -2813,7 +2812,7 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 1.1, z: 0}
---- !u!114 &1868214855302392569
+--- !u!114 &7601276390857039717
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2822,11 +2821,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 6714142460789114917}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5276fea68491edd4f93569a4a0f712a7, type: 3}
+  m_Script: {fileID: 11500000, guid: 1a5ecc6d1e479914199c35830441e04b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  type: 1
   maxHealth: 100
   currentAgent: {fileID: 4114180397858224311}
+  deadEffect: {fileID: 198519544771718108, guid: b2b8d2fd10636ed419ddd1a74174d4e8, type: 3}
   deadAudioClip: {fileID: 8300000, guid: bf965d6a6e1c5524aa96fa57288079b8, type: 3}
   audioSource: {fileID: 9042002203917818302}
 --- !u!1 &6807060124109400252

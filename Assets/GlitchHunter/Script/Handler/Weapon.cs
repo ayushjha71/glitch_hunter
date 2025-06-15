@@ -21,7 +21,7 @@ namespace GlitchHunter.Handler
         private Transform gunContainerTransform;
         private Transform camTransform;
         private Transform playerTransform;
-        private bool IsEquipped;
+        //private bool IsEquipped;
         private bool isActivePrompt = false;
         private bool IsInitialized = false;
 
@@ -52,32 +52,32 @@ namespace GlitchHunter.Handler
 
             Vector3 distanceToPlayer = playerTransform.position - transform.position;
 
-            if ((!IsEquipped && distanceToPlayer.magnitude <= pickupRange && !slotFull))
+            if ((!GameManager.Instance.IsEquipped && distanceToPlayer.magnitude <= pickupRange && !slotFull))
             {
-                Debug.Log("Gun Not Pickup IsActive Prompt false");
                 if (!isActivePrompt)
                 {
                     isActivePrompt = true;
-                    GlitchHunterConstant.OnShowPrompt?.Invoke(true, "Press F To Collect");
+                    GlitchHunterConstant.OnShowPrompt?.Invoke("Press F To Collect");
+                    Debug.Log("Show Prompt invoke");
                 }
 
                 if (Input.GetKeyDown(KeyCode.F))
                 {
-                    Debug.Log("Gun Not Pickup IsActive Prompt false Pickup funation called");
                     PickUp();
-                    GlitchHunterConstant.OnShowPrompt?.Invoke(false, "");
+                    GlitchHunterConstant.OnShowPrompt?.Invoke("");
                     isActivePrompt = false;
                 }
             }
-            if (IsEquipped && Input.GetKeyDown(KeyCode.Q))
+            if (GameManager.Instance.IsEquipped && Input.GetKeyDown(KeyCode.Q) )
             {
                 Drop();
             }
+            isActivePrompt = false;
         }
 
         private void PickUp()
         {
-            IsEquipped = true;
+            GameManager.Instance.IsEquipped = true;
             slotFull = true;
 
             transform.SetParent(gunContainerTransform);
@@ -90,7 +90,7 @@ namespace GlitchHunter.Handler
 
         private void Drop()
         {
-            IsEquipped = false;
+            GameManager.Instance.IsEquipped = false;
             slotFull = false;
 
             transform.SetParent(null);
@@ -99,15 +99,11 @@ namespace GlitchHunter.Handler
             collider.isTrigger = false;
 
             //Hand object carries momentum of player
-            rb.angularVelocity = playerTransform.GetComponent<Rigidbody>().angularVelocity;
+            rb.angularVelocity = playerTransform.GetComponent<CharacterController>().velocity;
 
 
             rb.AddForce(camTransform.forward * dropForwardForce, ForceMode.Impulse);
             rb.AddForce(camTransform.forward * dropUpwardForce, ForceMode.Impulse);
-
-            float random = UnityEngine.Random.Range(-1, 1);
-
-            rb.AddTorque(new Vector3(random, random, random));
         }
     }
 }

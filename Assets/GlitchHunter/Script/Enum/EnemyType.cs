@@ -6,7 +6,7 @@ namespace GlitchHunter.Enum
     {
         DEFAULT,
         SHOOTING,
-        MOVIE_CHARACTER,
+        Guard,
         DRONES,
     }
 }

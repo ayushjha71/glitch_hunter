@@ -1,4 +1,5 @@
 using GlitchHunter.Constant;
+using System.Collections;
 using TMPro;
 using Unity.Collections;
 using UnityEngine;
@@ -60,20 +61,21 @@ namespace GlitchHunter.UI
             reloadStatusText?.SetText(msg);
         }
 
-        private void OnShowPromptPanel(bool active, string msg)
+        private void OnShowPromptPanel(string msg)
         {
-            //Debug.Log("Prompt panel called" + );
-            if (active)
-            {
-                GlitchHunterConstant.FadeIn(promtPanel, 1, 0.3f, null);
-                promtText?.SetText(msg);
-                Debug.Log("Prompt panel showing");
-            }
-            else
-            {
-                GlitchHunterConstant.FadeOut(promtPanel, 0, 0.3f, null);
-            }
+            StartCoroutine(ShowPromtPanelCorutine(msg));
         }
+
+        private IEnumerator ShowPromtPanelCorutine(string msg)
+        {
+            GlitchHunterConstant.FadeIn(promtPanel, 1, 0.3f, null);
+            promtText?.SetText(msg);
+            Debug.Log("Prompt panel showing");
+            yield return new WaitForSeconds(5);
+            GlitchHunterConstant.FadeOut(promtPanel, 0, 0.3f, null);
+        }
+
+
 
         private void UpdateAmmoUI(int currentAmmo, int maxAmmo)
         {
