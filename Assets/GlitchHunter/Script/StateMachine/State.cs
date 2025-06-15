@@ -1,8 +1,10 @@
 using GlitchHunter.Constant;
+using GlitchHunter.Handler;
+using GlitchHunter.Handler.Enemy;
 using UnityEngine;
 using UnityEngine.AI;
 
-namespace GlitchHunter.State
+namespace GlitchHunter.StateMachine
 {
     public class State
     {
@@ -24,9 +26,9 @@ namespace GlitchHunter.State
         protected NavMeshAgent navMeshAgent;
         protected State state;
 
-        private float visDist = 10;
-        private float visAngle = 30;
-        private float shootDist = 7;
+        private float visDist = 20;
+        private float visAngle = 360;
+        public float shootDist = 10;
 
         public State(GameObject gameObject, NavMeshAgent agent, Animator anim, Transform transform)
         {
@@ -51,22 +53,28 @@ namespace GlitchHunter.State
             stage = EVENT.EXIT;
         }
 
+        // Modify the Process method to handle death
         public State Process()
         {
-            if (stage == EVENT.ENTER)
+            if (IsDead() && !(this is DeadState) && !(this is DeathTransitionState))
             {
-                Enter();
+                return new DeathTransitionState(npc, navMeshAgent, animator, playerTransform);
             }
-            if (stage == EVENT.UPDATE)
-            {
-                Update();
-            }
+
+            if (stage == EVENT.ENTER) Enter();
+            if (stage == EVENT.UPDATE) Update();
             if (stage == EVENT.EXIT)
             {
                 Exit();
                 return state;
             }
             return this;
+        }
+
+        public bool IsDead()
+        {
+            ShootingNPCHealthHandler npcHealth = npc.GetComponent<ShootingNPCHealthHandler>();
+            return npcHealth != null && npcHealth.IsDead();
         }
 
         public bool CanSeePlayer()
@@ -139,11 +147,11 @@ namespace GlitchHunter.State
         public override void Enter()
         {
             float lastDistance = Mathf.Infinity;
-            for(int i = 0;  i< GameEnvironment.Singleton.Checkpoints.Count; i++)
+            for (int i = 0; i < GameEnvironment.Singleton.Checkpoints.Count; i++)
             {
                 GameObject thisCheckPoints = GameEnvironment.Singleton.Checkpoints[i];
                 float distance = Vector3.Distance(npc.transform.position, thisCheckPoints.transform.position);
-                if(distance < lastDistance)
+                if (distance < lastDistance)
                 {
                     currentIndex = i - 1;
                     lastDistance = distance;
@@ -226,33 +234,73 @@ namespace GlitchHunter.State
     {
         private float mRotationSpeed = 2;
         private AudioSource mAudioSource;
+        private float mLastShotTime;
+        private float mShootRate = 0.5f; // Time between shots
+        private float mDamagePerShot = 2f;
+        private LayerMask mShootableMask;
 
-        public AttackState(GameObject gameObject, NavMeshAgent agent, Animator anim, Transform transform) : base(gameObject, agent, anim, transform)
+        public AttackState(GameObject gameObject, NavMeshAgent agent, Animator anim, Transform transform)
+            : base(gameObject, agent, anim, transform)
         {
             stateName = STATE.ATTACK;
             mAudioSource = gameObject.GetComponent<AudioSource>();
+            mShootableMask = LayerMask.GetMask("Player"); // Make sure your player is on the "Player" layer
         }
 
         public override void Enter()
         {
             animator.SetTrigger("isShooting");
             navMeshAgent.isStopped = true;
-            mAudioSource.Play();
+          //  mAudioSource.Play();
+            mLastShotTime = Time.time;
             base.Enter();
         }
 
         public override void Update()
         {
+            // Rotate towards player
             Vector3 direction = playerTransform.position - npc.transform.position;
             float angle = Vector3.Angle(direction, npc.transform.forward);
             direction.y = 0;
+            npc.transform.rotation = Quaternion.Slerp(npc.transform.rotation,
+                Quaternion.LookRotation(direction), Time.deltaTime * mRotationSpeed);
 
-            npc.transform.rotation = Quaternion.Slerp(npc.transform.rotation, Quaternion.LookRotation(direction), Time.deltaTime * mRotationSpeed);
+            // Shooting logic
+            if (Time.time - mLastShotTime > mShootRate)
+            {
+                ShootAtPlayer(direction);
+                mLastShotTime = Time.time;
+            }
 
+            // Transition conditions
             if (!CanAttackPlayer())
             {
                 state = new IdleState(npc, navMeshAgent, animator, playerTransform);
                 stage = EVENT.EXIT;
+            }
+        }
+
+        private void ShootAtPlayer(Vector3 directionToPlayer)
+        {
+            Debug.Log("Shooting Player" + mShootableMask.ToString());
+            // Play shooting sound
+            mAudioSource.Play();
+            // Raycast towards player
+            if (Physics.Raycast(npc.transform.position, directionToPlayer, out RaycastHit hit, shootDist, mShootableMask))
+            {
+                // Check if we hit the player
+                Debug.Log(hit.transform.gameObject.name);
+                var playerHealth = hit.transform.GetComponent<PlayerHealthHandler>();
+                if (playerHealth != null)
+                {
+                    if (playerHealth.IsDead())
+                    {
+                        Debug.Log("Player Dead Set another state");
+                        state = new PatrolState(npc, navMeshAgent, animator, playerTransform);
+                    }
+                    playerHealth.TakeDamage(mDamagePerShot);
+                    Debug.Log($"NPC hit player for {mDamagePerShot} damage");
+                }
             }
         }
 
@@ -261,6 +309,61 @@ namespace GlitchHunter.State
             animator.ResetTrigger("isShooting");
             mAudioSource.Stop();
             base.Exit();
+        }
+    }
+
+    public class DeathTransitionState : State
+    {
+        private float transitionTimer = 0f;
+        private float transitionDelay = 0.1f; // Small delay to ensure idle animation starts
+        private AudioSource mAudioSource;
+
+        public DeathTransitionState(GameObject gameObject, NavMeshAgent agent, Animator anim, Transform transform)
+            : base(gameObject, agent, anim, transform)
+        {
+            stateName = STATE.IDLE; // Temporarily set to idle for transition
+            mAudioSource = gameObject.GetComponent<AudioSource>();
+        }
+
+        public override void Enter()
+        {
+            // First transition to idle state in animator
+            animator.SetTrigger("isIdle");
+            transitionTimer = 0f;
+            mAudioSource.Stop();
+            base.Enter();
+        }
+
+        public override void Update()
+        {
+            transitionTimer += Time.deltaTime;
+
+            // After a short delay, transition to actual death state
+            if (transitionTimer >= transitionDelay)
+            {
+                state = new DeadState(npc, navMeshAgent, animator, playerTransform);
+                stage = EVENT.EXIT;
+            }
+        }
+
+        public override void Exit()
+        {
+            animator.ResetTrigger("isIdle");
+        }
+    }
+
+    public class DeadState : State
+    {
+        public DeadState(GameObject gameObject, NavMeshAgent agent, Animator anim, Transform transform)
+            : base(gameObject, agent, anim, transform)
+        {
+            stateName = STATE.SLEEP;
+        }
+
+        public override void Enter()
+        {
+            animator.SetTrigger("isSleeping");
+            base.Enter();
         }
     }
 }

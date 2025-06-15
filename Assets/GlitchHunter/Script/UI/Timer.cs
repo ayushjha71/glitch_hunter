@@ -8,7 +8,6 @@ namespace GlitchHunter.UI
     public class Timer : MonoBehaviour
     {
         [SerializeField] private TextMeshProUGUI timerText;
-        [SerializeField] private float timeValue = 300;
 
         private static float timeRemaining;
         private static bool isRunning;
@@ -36,7 +35,6 @@ namespace GlitchHunter.UI
 
             if (timeRemaining > 0)
             {
-                GlitchHunterConstant.GameTimeCompleted += Time.deltaTime;
                 timeRemaining -= Time.deltaTime;
                 UpdateTimerUI();
             }

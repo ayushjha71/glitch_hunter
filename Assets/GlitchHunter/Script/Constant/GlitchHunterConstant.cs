@@ -6,7 +6,16 @@ namespace GlitchHunter.Constant
 {
     public static class GlitchHunterConstant
     {
-        public static float GameTimeCompleted;
+        public static Action<bool> OnShowPlayerUI;
+        public static Action<bool, string> OnShowPrompt;
+        public static Action<int, int> OnUpdateAmmoUI;
+        public static Action<float> OnReloadSliderValue;
+        public static Action<float> OnUpdateHealthSlider;
+        public static Action<string> OnUpdateReloadStatus;
+        public static Action OnGameOver;
+
+
+        public static Action<int> OnCollectKey;
 
         public static void FadeIn(CanvasGroup canvasGroup, float endValue, float duration, Action OnCompleted)
         {

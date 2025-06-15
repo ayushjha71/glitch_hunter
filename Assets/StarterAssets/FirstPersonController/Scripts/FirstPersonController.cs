@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using GlitchHunter.Constant;
+using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
@@ -51,6 +52,9 @@ namespace StarterAssets
 		[Tooltip("How far in degrees can you move the camera down")]
 		public float BottomClamp = -90.0f;
 
+		[SerializeField]
+		private Crosshair crosshair;
+
 		// cinemachine
 		private float _cinemachineTargetPitch;
 
@@ -74,7 +78,24 @@ namespace StarterAssets
 
 		private const float _threshold = 0.01f;
 
-		private bool IsCurrentDeviceMouse
+
+        // Add these new variables for flying
+        [Header("Flying")]
+        [Tooltip("Whether flying is enabled")]
+        public bool EnableFlying = true;
+        [Tooltip("Flying upward speed when holding jump")]
+        public float FlySpeed = 3.0f;
+        [Tooltip("Maximum height the player can fly to")]
+        public float MaxFlyHeight = 10.0f;
+        [Tooltip("Time in seconds player needs to hold jump to start flying")]
+        public float FlyActivationTime = 0.5f;
+
+        // Track flying state and timer
+        private bool _isFlying = false;
+        private float _originalGravity;
+		private bool canActiveContols;
+
+        private bool IsCurrentDeviceMouse
 		{
 			get
 			{
@@ -97,7 +118,8 @@ namespace StarterAssets
 
 		private void Start()
 		{
-			_controller = GetComponent<CharacterController>();
+            _originalGravity = Gravity;
+            _controller = GetComponent<CharacterController>();
 			_input = GetComponent<StarterAssetsInputs>();
 #if ENABLE_INPUT_SYSTEM
 			_playerInput = GetComponent<PlayerInput>();
@@ -108,21 +130,38 @@ namespace StarterAssets
 			// reset our timeouts on start
 			_jumpTimeoutDelta = JumpTimeout;
 			_fallTimeoutDelta = FallTimeout;
-		}
+
+			GlitchHunterConstant.OnShowPlayerUI += CanStartControls;
+
+        }
 
 		private void Update()
 		{
-			JumpAndGravity();
+            if (!canActiveContols)
+            {
+				return;
+            }
+            HandleFlyingInput();
+            JumpAndGravity();
 			GroundedCheck();
 			Move();
 		}
 
 		private void LateUpdate()
 		{
-			CameraRotation();
+            if (!canActiveContols)
+            {
+                return;
+            }
+            CameraRotation();
 		}
 
-		private void GroundedCheck()
+        private void OnDisable()
+        {
+            GlitchHunterConstant.OnShowPlayerUI -= CanStartControls;
+        }
+
+        private void GroundedCheck()
 		{
 			// set sphere position, with offset
 			Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z);
@@ -192,61 +231,105 @@ namespace StarterAssets
 			{
 				// move
 				inputDirection = transform.right * _input.move.x + transform.forward * _input.move.y;
-			}
+				//crosshair.SetScale(CrosshairScale.Walk, 2);
+            }
 
 			// move the player
 			_controller.Move(inputDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
 		}
 
-		private void JumpAndGravity()
-		{
-			if (Grounded)
-			{
-				// reset the fall timeout timer
-				_fallTimeoutDelta = FallTimeout;
+        private void HandleFlyingInput()
+        {
+            if (!EnableFlying) return;
 
-				// stop our velocity dropping infinitely when grounded
-				if (_verticalVelocity < 0.0f)
-				{
-					_verticalVelocity = -2f;
-				}
+            // Start flying immediately when space is held (in air)
+            if (Input.GetKeyDown(KeyCode.Space) && !Grounded)
+            {
+                _isFlying = true;
+               // crosshair.SetScale(CrosshairScale.Walk, 2);
+                Gravity = 0f;
+            }
+            // Stop flying when space is released
+            else if (_isFlying && Input.GetKeyUp(KeyCode.Space))
+            {
+                _isFlying = false;
+                Gravity = _originalGravity;
+            }
+        }
 
-				// Jump
-				if (_input.jump && _jumpTimeoutDelta <= 0.0f)
-				{
-					// the square root of H * -2 * G = how much velocity needed to reach desired height
-					_verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
-				}
+        private void JumpAndGravity()
+        {
+            if (Grounded)
+            {
+                // reset the fall timeout timer
+                _fallTimeoutDelta = FallTimeout;
 
-				// jump timeout
-				if (_jumpTimeoutDelta >= 0.0f)
-				{
-					_jumpTimeoutDelta -= Time.deltaTime;
-				}
-			}
-			else
-			{
-				// reset the jump timeout timer
-				_jumpTimeoutDelta = JumpTimeout;
+                // stop our velocity dropping infinitely when grounded
+                if (_verticalVelocity < 0.0f)
+                {
+                    _verticalVelocity = -2f;
+                }
 
-				// fall timeout
-				if (_fallTimeoutDelta >= 0.0f)
-				{
-					_fallTimeoutDelta -= Time.deltaTime;
-				}
+                // Jump
+                if (_input.jump && _jumpTimeoutDelta <= 0.0f)
+                {
+                    // the square root of H * -2 * G = how much velocity needed to reach desired height
+                    _verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
+                }
 
-				// if we are not grounded, do not jump
-				_input.jump = false;
-			}
+                // jump timeout
+                if (_jumpTimeoutDelta >= 0.0f)
+                {
+                    _jumpTimeoutDelta -= Time.deltaTime;
+                }
+            }
+            else
+            {
+                // reset the jump timeout timer
+                _jumpTimeoutDelta = JumpTimeout;
 
-			// apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)
-			if (_verticalVelocity < _terminalVelocity)
-			{
-				_verticalVelocity += Gravity * Time.deltaTime;
-			}
-		}
+                // fall timeout
+                if (_fallTimeoutDelta >= 0.0f)
+                {
+                    _fallTimeoutDelta -= Time.deltaTime;
+                }
 
-		private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
+                // if we are not grounded, do not jump (but we might fly)
+                if (!_isFlying)
+                {
+                    _input.jump = false;
+                }
+            }
+
+            // Handle flying upward movement
+            if (_isFlying && _input.jump)
+            {
+                // Check if we haven't reached max fly height
+                if (transform.position.y < MaxFlyHeight)
+                {
+                    _verticalVelocity = FlySpeed;
+                }
+                else
+                {
+                    _verticalVelocity = 0f;
+                }
+            }
+
+            // apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)
+            if (!_isFlying && _verticalVelocity < _terminalVelocity)
+            {
+                _verticalVelocity += Gravity * Time.deltaTime;
+            }
+        }
+
+        private void CanStartControls(bool active)
+        {
+			_input.cursorLocked = true;
+			_input.SetCursorState(active);
+            canActiveContols = active;
+        }
+
+        private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
 		{
 			if (lfAngle < -360f) lfAngle += 360f;
 			if (lfAngle > 360f) lfAngle -= 360f;

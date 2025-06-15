@@ -1,5 +1,6 @@
 using GlitchHunter.Constant;
 using GlitchHunter.Data;
+using GlitchHunter.Manager;
 using GlitchHunter.UI;
 using TMPro;
 using UnityEngine;
@@ -24,6 +25,8 @@ public class UIManager : MonoBehaviour
 
     [Header("In Game UI")]
     [SerializeField]
+    private CanvasGroup inGamePanel;
+    [SerializeField]
     private UITextData uiTextScriptableObject;
     [SerializeField]
     private CanvasGroup promptPanel;
@@ -34,12 +37,25 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private AudioSource audioSource;
 
+    [SerializeField]
+    private CanvasGroup gameOverPanel;
+
     private int currentIndex = 0;
 
     private void Start()
     {
         startBtn.onClick.AddListener(StartBtnClick);
         OkBtn.onClick.AddListener(OnClickOkButton);
+    }
+
+    private void OnEnable()
+    {
+        GlitchHunterConstant.OnGameOver += OnGameOver;
+    }
+
+    private void OnDisable()
+    {
+        GlitchHunterConstant.OnGameOver -= OnGameOver;
     }
 
     private void StartBtnClick()
@@ -56,7 +72,7 @@ public class UIManager : MonoBehaviour
     {
         GlitchHunterConstant.FadeOut(cutSceneCanvas, 0, duration, null);
         GlitchHunterConstant.FadeOut(mainScreen, 0, duration, null);
-        GlitchHunterConstant.FadeIn(promptPanel, 1, duration, null);
+        GlitchHunterConstant.FadeIn(promptPanel, 1, duration, StartTimer);
         mainScreen.gameObject.SetActive(false);
         if (uiTextScriptableObject != null && uiTextScriptableObject.UIData.Length > 0)
         {
@@ -83,14 +99,20 @@ public class UIManager : MonoBehaviour
         else
         {
             // All messages shown, deactivate UI
-            //gameObject.SetActive(false);
-            GlitchHunterConstant.FadeOut(promptPanel, 0, 0.3f, StartTimer);
-            
+            GlitchHunterConstant.FadeOut(promptPanel, 0, 0.3f, null);
+            GlitchHunterConstant.OnShowPlayerUI?.Invoke(true);
         }
+    }
+
+    private void OnGameOver()
+    {
+        GlitchHunterConstant.FadeOut(inGamePanel, 0, 0.3f, null);
+        GlitchHunterConstant.FadeIn(gameOverPanel, 1, 0.3f, null);
     }
 
     private void StartTimer()
     {
+        GameManager.Instance.IsGameStarted = true;
         Timer.StartTimer(300, null);
     }
 }

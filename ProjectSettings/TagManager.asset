@@ -8,6 +8,8 @@ TagManager:
   - Fire
   - CinemachineTarget
   - Checkpoints
+  - Target
+  - MapTeleportLocation
   layers:
   - Default
   - TransparentFX
@@ -15,9 +17,9 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
-  - 
+  - Enemy
+  - Player
+  - Collectable
   - 
   - 
   - 
