@@ -127,6 +127,37 @@ MonoBehaviour:
   _crosshairShootScale: {x: 0.02, y: 0.02, z: 0.02}
   _crosshairRunScale: {x: 0.03, y: 0.03, z: 0.03}
   _scaleSpeed: 2
+--- !u!1 &1434778172101258821
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4406847563759458605}
+  m_Layer: 0
+  m_Name: MuzzleFlashTransform
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4406847563759458605
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1434778172101258821}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.006, y: 0.111, z: 0.908}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6578618570543529495}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3990647533891504314
 GameObject:
   m_ObjectHideFlags: 0
@@ -394,7 +425,8 @@ MonoBehaviour:
   zoomFOV: 30
   zoomSpeed: 10
   normalFOV: 60
-  muzzleFlash: {fileID: 0}
+  muzzleFlash: {fileID: 8865077464205873500, guid: 2c22462a5cdded445a7007ed80c482b9, type: 3}
+  muzzleFlashTransform: {fileID: 4406847563759458605}
   impactEffect: {fileID: 5300778849037655449, guid: 84a441c483a047148a65cad89ea8e0e1, type: 3}
 --- !u!114 &8106980568056305404
 MonoBehaviour:
@@ -476,13 +508,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4097343362620604062}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.075697795, z: -0, w: 0.9971309}
+  m_LocalRotation: {x: 0, y: -0.0082291365, z: 0, w: 0.99996614}
   m_LocalPosition: {x: 0.061, y: -0.30599976, z: 0.536}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 4406847563759458605}
   m_Father: {fileID: 7655874031829795620}
-  m_LocalEulerAnglesHint: {x: 0, y: -8.683, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -0.943, z: 0}
 --- !u!1 &6798050956517751328
 GameObject:
   m_ObjectHideFlags: 0

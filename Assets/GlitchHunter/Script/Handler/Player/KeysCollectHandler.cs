@@ -19,6 +19,7 @@ namespace GlitchHunter.Handler
 
                 if(distanceToPlayer.magnitude >= pickUpRange)
                 {
+                    isActivePrompt = false;
                     return;
                 }
 

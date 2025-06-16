@@ -13,13 +13,16 @@ MonoBehaviour:
   m_Name: UIText
   m_EditorClassIdentifier: 
   UIData:
-  - Messages: Welcome to New Bolywood! Protect your future
-    AudioClip: {fileID: 0}
-  - Messages: Eliminate Glitch Entities or Die here
-    AudioClip: {fileID: 0}
-  - Messages: Find 3 Key to Save the world and save your self.
-    AudioClip: {fileID: 0}
-  - Messages: 'Escape before collapse! Enjoy your Death. '
-    AudioClip: {fileID: 0}
-  - Messages: 'Game Started find the weapon to protect your self. '
-    AudioClip: {fileID: 0}
+  - Messages: " Welcome to Neo Bollywood. This isn't cinema anymore. It's survival.
+      Protect your future\u2014or be erased."
+    AudioClip: {fileID: 8300000, guid: 279f6ef1f4579c14f9bbe76b38eb6b1c, type: 3}
+  - Messages: Glitch Entities Detected. Hunt them down. Or join their corrupted code.
+    AudioClip: {fileID: 8300000, guid: cba5092f07262824aba49354323b5a9b, type: 3}
+  - Messages: Reality Collapse Imminent. Escape... if you dare. Or enjoy your glorious
+      end.
+    AudioClip: {fileID: 8300000, guid: 22a14be5855af404d917a461ca4bfcc9, type: 3}
+  - Messages: "Three Keys. One World. Find them. Save the world\u2014or lose yourself
+      with it."
+    AudioClip: {fileID: 8300000, guid: 5e77050ab8b7da14bbde161d35dc4866, type: 3}
+  - Messages: Protocol Engaged. Arm up. Survive the storm. The glitch doesn't wait.
+    AudioClip: {fileID: 8300000, guid: 99fb6b5036c955c4baf92bc530fd7579, type: 3}

@@ -251,12 +251,12 @@ namespace GlitchHunter.Manager
             waveKeys[waveIndex] = Instantiate(data.KeyPrefab, keySpawnPoint.position, keySpawnPoint.rotation);
 
             // Add key collection component
-            Key keyCollector = waveKeys[waveIndex].GetComponent<Key>();
-            if (keyCollector == null)
+            Key keys = waveKeys[waveIndex].GetComponent<Key>();
+            if (keys == null)
             {
-                keyCollector = waveKeys[waveIndex].AddComponent<Key>();
+                keys = waveKeys[waveIndex].AddComponent<Key>();
             }
-            keyCollector.Initialize(this, waveIndex);
+            keys.Initialize(this, waveIndex);
 
             // Spawn guard enemy near the key
             if (data.KeyGuardEnemyPrefab != null)

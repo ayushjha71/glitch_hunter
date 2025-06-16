@@ -58,7 +58,6 @@ namespace GlitchHunter.Handler
                 {
                     isActivePrompt = true;
                     GlitchHunterConstant.OnShowPrompt?.Invoke("Press F To Collect");
-                    Debug.Log("Show Prompt invoke");
                 }
 
                 if (Input.GetKeyDown(KeyCode.F))

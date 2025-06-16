@@ -78,7 +78,8 @@ public class UIManager : MonoBehaviour
         {
             currentIndex = 0;
             promptText.text = uiTextScriptableObject.UIData[currentIndex].Messages;
-          //  audioSource.clip = uiTextScriptableObject.UIData[currentIndex].AudioClip;
+            audioSource.clip = uiTextScriptableObject.UIData[currentIndex].AudioClip;
+            audioSource.Play();
         }
         else
         {
@@ -89,12 +90,14 @@ public class UIManager : MonoBehaviour
 
     private void OnClickOkButton()
     {
+        audioSource.Stop();
         currentIndex++;
 
         if (currentIndex < uiTextScriptableObject.UIData.Length)
         {
             promptText.text = uiTextScriptableObject.UIData[currentIndex].Messages;
-           // audioSource.clip = uiTextScriptableObject.UIData[currentIndex].AudioClip;
+            audioSource.clip = uiTextScriptableObject.UIData[currentIndex].AudioClip;
+            audioSource.Play();
         }
         else
         {

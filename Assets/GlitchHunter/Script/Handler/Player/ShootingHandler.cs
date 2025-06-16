@@ -43,6 +43,8 @@ namespace GlitchHunter.Handler
         [Header("Effects")]
         [Tooltip("Muzzle flash particle effect")]
         public ParticleSystem muzzleFlash;
+        [SerializeField]
+        private Transform muzzleFlashTransform;
         [Tooltip("Impact effect prefab")]
         public GameObject impactEffect;
 
@@ -131,6 +133,7 @@ namespace GlitchHunter.Handler
             // Play muzzle flash
             if (muzzleFlash != null)
             {
+                Instantiate(muzzleFlash, muzzleFlashTransform.position, muzzleFlashTransform.rotation);
                 muzzleFlash.Play();
                 GameManager.Instance.AudioSource.PlayOneShot(fireAudioClip);
             }
