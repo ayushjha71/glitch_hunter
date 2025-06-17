@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using GlitchHunter.Handler.Enemy;
 using GlitchHunter.Constant;
 using GlitchHunter.Manager;
+using Unity.Cinemachine;
 
 namespace GlitchHunter.Handler
 {
@@ -47,6 +48,8 @@ namespace GlitchHunter.Handler
         private Transform muzzleFlashTransform;
         [Tooltip("Impact effect prefab")]
         public GameObject impactEffect;
+        [SerializeField]
+        private CinemachineCamera playerFollowCamera;
 
         // Private variables
         private float _nextTimeToFire = 0f;
@@ -190,7 +193,7 @@ namespace GlitchHunter.Handler
 
             // Smooth zoom transition
             float targetFOV = _isZoomed ? zoomFOV : normalFOV;
-            _playerCamera.fieldOfView = Mathf.Lerp(_playerCamera.fieldOfView, targetFOV, zoomSpeed * Time.deltaTime);
+            playerFollowCamera.Lens.FieldOfView = Mathf.Lerp(playerFollowCamera.Lens.FieldOfView, targetFOV, zoomSpeed * Time.deltaTime);
         }
     }
 }

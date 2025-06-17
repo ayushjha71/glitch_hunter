@@ -2602,6 +2602,7 @@ GameObject:
   - component: {fileID: 712428808592230647}
   - component: {fileID: 8356483455104476794}
   - component: {fileID: 7601276390857039717}
+  - component: {fileID: 6405110733246988980}
   m_Layer: 6
   m_Name: Ugg_Shooting_Enemy
   m_TagString: Target
@@ -2830,6 +2831,33 @@ MonoBehaviour:
   deadEffect: {fileID: 198519544771718108, guid: b2b8d2fd10636ed419ddd1a74174d4e8, type: 3}
   deadAudioClip: {fileID: 8300000, guid: bf965d6a6e1c5524aa96fa57288079b8, type: 3}
   audioSource: {fileID: 9042002203917818302}
+--- !u!54 &6405110733246988980
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6714142460789114917}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 112
+  m_CollisionDetection: 1
 --- !u!1 &6807060124109400252
 GameObject:
   m_ObjectHideFlags: 0

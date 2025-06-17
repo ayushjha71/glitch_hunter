@@ -2,7 +2,6 @@ using GlitchHunter.Constant;
 using GlitchHunter.Manager;
 using StarterAssets;
 using UnityEngine;
-using UnityEngine.UI; // Required for UI elements
 
 namespace GlitchHunter.Handler
 {

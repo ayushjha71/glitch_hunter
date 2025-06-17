@@ -36,7 +36,6 @@ public class UIManager : MonoBehaviour
     private Button OkBtn;
     [SerializeField]
     private AudioSource audioSource;
-
     [SerializeField]
     private CanvasGroup gameOverPanel;
 

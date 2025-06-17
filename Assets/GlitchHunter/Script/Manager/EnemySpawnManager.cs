@@ -14,8 +14,8 @@ namespace GlitchHunter.Manager
     {
         [Header("Enemy Settings")]
         public EnemyType EnemyType;
-        public GameObject EnemyPrefab;
-        public int EnemyCount;                // Number of enemies to spawn
+        public GameObject[] EnemyPrefabs;      // Changed from single prefab to array
+        public int EnemyCount;                // Number of enemies to spawn (per prefab type)
         public float SpawnInterval;           // Time between spawns for this wave
 
         [Header("Wave Timing")]
@@ -56,7 +56,7 @@ namespace GlitchHunter.Manager
 
         // Spawned objects tracking
         private List<GameObject>[] waveEnemies; // Track enemies per wave
-        private GameObject[] waveKeys; // Track keys per wave (changed from single currentKey)
+        private GameObject[] waveKeys; // Track keys per wave
         private Coroutine messageCoroutine;
 
         void Start()
@@ -69,7 +69,7 @@ namespace GlitchHunter.Manager
             keySpawned = new bool[waveCount];
             waveCoroutines = new Coroutine[waveCount];
             waveEnemies = new List<GameObject>[waveCount];
-            waveKeys = new GameObject[waveCount]; // Initialize wave keys array
+            waveKeys = new GameObject[waveCount];
 
             // Initialize enemy lists for each wave
             for (int i = 0; i < waveCount; i++)
@@ -106,10 +106,6 @@ namespace GlitchHunter.Manager
                             data.WaveStartTime = 180f;
                             data.WaveDuration = 40f;
                             break;
-                            //default: // Additional waves
-                            //    data.WaveStartTime = 60f + (i * 90f);
-                            //    data.WaveDuration = 60f;
-                            //    break;
                     }
                 }
 
@@ -153,7 +149,6 @@ namespace GlitchHunter.Manager
                 EnemyData data = enemyData[i];
 
                 // Spawn key if time reached and not already spawned and key not collected
-                // Removed currentKey == null condition to allow multiple keys
                 if (GameManager.Instance.GameTime >= data.actualKeySpawnTime && !keySpawned[i] && !keyCollected[i])
                 {
                     Debug.Log($"Spawning Key {i + 1} at {GameManager.Instance.GameTime:F1}s");
@@ -178,9 +173,9 @@ namespace GlitchHunter.Manager
                 }
 
                 // Spawn enemies from this wave
-                if (data.EnemyPrefab != null)
+                if (data.EnemyPrefabs != null && data.EnemyPrefabs.Length > 0)
                 {
-                    SpawnEnemy(data, waveIndex);
+                    SpawnEnemies(data, waveIndex);
                     yield return new WaitForSeconds(data.SpawnInterval);
                 }
 
@@ -191,41 +186,53 @@ namespace GlitchHunter.Manager
             if (!keyCollected[waveIndex])
             {
                 Debug.Log($"Wave {waveIndex + 1} completed by time - destroying enemies");
-                StartCoroutine(DestroyWaveEnemies(waveIndex));
+              //  StartCoroutine(DestroyWaveEnemies(waveIndex));
             }
 
             waveCompleted[waveIndex] = true;
             Debug.Log($"Wave {waveIndex + 1} completed at {GameManager.Instance.GameTime:F1}s");
         }
 
-        void SpawnEnemy(EnemyData enemyData, int waveIndex)
+        void SpawnEnemies(EnemyData enemyData, int waveIndex)
         {
             if (enemyData.spawnPoints == null || enemyData.spawnPoints.Length == 0)
             {
-                Debug.LogWarning("No spawn points available for enemy: " + enemyData.EnemyPrefab.name);
+                Debug.LogWarning("No spawn points available for enemies in wave: " + (waveIndex + 1));
                 return;
             }
 
-            // Spawn the specified number of enemies at random spawn points
-            for (int i = 0; i < enemyData.EnemyCount; i++)
+            if (enemyData.EnemyPrefabs == null || enemyData.EnemyPrefabs.Length == 0)
             {
-                // Select a random spawn point
-                Transform randomSpawnPoint = enemyData.spawnPoints[Random.Range(0, enemyData.spawnPoints.Length)];
+                Debug.LogWarning("No enemy prefabs assigned for wave: " + (waveIndex + 1));
+                return;
+            }
 
-                if (randomSpawnPoint != null)
+            // Spawn each enemy type the specified number of times
+            foreach (GameObject enemyPrefab in enemyData.EnemyPrefabs)
+            {
+                if (enemyPrefab == null) continue;
+
+                // Spawn EnemyCount number of this enemy type
+                for (int i = 0; i < enemyData.EnemyCount; i++)
                 {
-                    GameObject enemy = Instantiate(enemyData.EnemyPrefab, randomSpawnPoint.position, randomSpawnPoint.rotation);
-                    waveEnemies[waveIndex].Add(enemy); // Add to specific wave enemy list
+                    // Select a random spawn point for each enemy
+                    Transform randomSpawnPoint = enemyData.spawnPoints[Random.Range(0, enemyData.spawnPoints.Length)];
 
-                    // Add enemy cleanup component
-                    EnemyCleanup cleanup = enemy.GetComponent<EnemyCleanup>();
-                    if (cleanup == null)
+                    if (randomSpawnPoint != null)
                     {
-                        cleanup = enemy.AddComponent<EnemyCleanup>();
-                    }
-                    cleanup.Initialize(this);
+                        GameObject enemy = Instantiate(enemyPrefab, randomSpawnPoint.position, randomSpawnPoint.rotation);
+                        waveEnemies[waveIndex].Add(enemy); // Add to specific wave enemy list
 
-                    Debug.Log($"Spawned {enemyData.EnemyPrefab.name} at {randomSpawnPoint.position} for Wave {waveIndex + 1}");
+                        // Add enemy cleanup component
+                        EnemyCleanup cleanup = enemy.GetComponent<EnemyCleanup>();
+                        if (cleanup == null)
+                        {
+                            cleanup = enemy.AddComponent<EnemyCleanup>();
+                        }
+                        cleanup.Initialize(this);
+
+                        Debug.Log($"Spawned {enemyPrefab.name} at {randomSpawnPoint.position} for Wave {waveIndex + 1}");
+                    }
                 }
             }
         }
@@ -301,7 +308,7 @@ namespace GlitchHunter.Manager
             }
 
             // Destroy all enemies from this specific wave with particle effects
-            StartCoroutine(DestroyWaveEnemies(waveIndex));
+           // StartCoroutine(DestroyWaveEnemies(waveIndex));
         }
 
         IEnumerator DestroyWaveEnemies(int waveIndex)

@@ -16,12 +16,13 @@ namespace GlitchHunter.Handler
         private float dropForwardForce;
         [SerializeField]
         private float dropUpwardForce;
+        [SerializeField]
+        private RotateObjectHandler rotationHandler;
 
 
         private Transform gunContainerTransform;
         private Transform camTransform;
         private Transform playerTransform;
-        //private bool IsEquipped;
         private bool isActivePrompt = false;
         private bool IsInitialized = false;
 
@@ -76,6 +77,7 @@ namespace GlitchHunter.Handler
 
         private void PickUp()
         {
+            rotationHandler.enabled = false;
             GameManager.Instance.IsEquipped = true;
             slotFull = true;
 

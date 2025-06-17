@@ -30,7 +30,7 @@ namespace GlitchHunter.Handler.Enemy
             mCurrentHealth -= damage;
             Debug.Log($"NPC took {damage} damage. Current health: {mCurrentHealth}");
 
-            if (mCurrentHealth <= 0)
+            if (mCurrentHealth <= 1)
             {
                 Die();
             }

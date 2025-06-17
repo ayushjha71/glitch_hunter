@@ -19,7 +19,8 @@ namespace GlitchHunter.Manager
             set;
         }
 
-        [HideInInspector] public bool IsGameStarted = false;
+        public bool IsGameStarted = false;
+        public bool IsMeleeCombatStarted = false;
         [HideInInspector] public bool IsEquipped = false;
         [HideInInspector] public AudioSource AudioSource;
 
@@ -50,6 +51,11 @@ namespace GlitchHunter.Manager
             if (IsGameStarted)
             {
                 mGameTime += Time.deltaTime;
+            }
+
+            if(mGameTime >= 180)
+            {
+                IsMeleeCombatStarted = true;
             }
 
             if (mGameTime >= gameDuration)

@@ -1,4 +1,5 @@
 ﻿using GlitchHunter.Constant;
+using GlitchHunter.Manager;
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
@@ -137,9 +138,9 @@ namespace StarterAssets
 
 		private void Update()
 		{
-            if (!canActiveContols)
+            if (!GameManager.Instance.IsGameStarted)
             {
-				return;
+                return;
             }
             HandleFlyingInput();
             JumpAndGravity();
@@ -149,7 +150,7 @@ namespace StarterAssets
 
 		private void LateUpdate()
 		{
-            if (!canActiveContols)
+            if (!GameManager.Instance.IsGameStarted)
             {
                 return;
             }

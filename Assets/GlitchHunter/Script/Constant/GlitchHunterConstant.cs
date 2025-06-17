@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using DG.Tweening;
+using GlitchHunter.Handler.Player;
 
 namespace GlitchHunter.Constant
 {
@@ -13,6 +14,9 @@ namespace GlitchHunter.Constant
         public static Action<float> OnUpdateHealthSlider;
         public static Action<string> OnUpdateReloadStatus;
         public static Action OnGameOver;
+
+        //Combat 
+        public static Action<PlayerAttackState> OnAttackStateChange;
 
 
         public static Action<int> OnCollectKey;
