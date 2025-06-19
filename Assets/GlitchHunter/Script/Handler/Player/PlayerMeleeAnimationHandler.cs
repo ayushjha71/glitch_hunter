@@ -1,26 +1,17 @@
 using GlitchHunter.Constant;
 using GlitchHunter.Manager;
+using GlitchHunter.Enum;
 using UnityEngine;
 
 
 namespace GlitchHunter.Handler.Player
 {
-    public enum PlayerAttackState
-    {
-        Default,
-        Attack_ONE,
-        Attack_TWO,
-        Attack_THREE,
-        DEAD
-    }
-
     public class PlayerMeleeAnimationHandler : MonoBehaviour
     {
         [SerializeField]
         private GameObject sword;
         [SerializeField]
         private Animator animator;
-
 
         private bool IsSwordActive = false;
 
@@ -55,33 +46,49 @@ namespace GlitchHunter.Handler.Player
             }
         }
 
-        private void UpdateAnimatoState(PlayerAttackState state)
+        private void UpdateAnimatoState(MeleeAttackState state)
         {
             switch (state)
             {
-                case PlayerAttackState.Default:
+                case MeleeAttackState.Default:
                     {
                         animator.SetTrigger(IsIdle);
                     }
                     break;
-                case PlayerAttackState.Attack_ONE:
+                case MeleeAttackState.IDLE:
+                    {
+                        animator.SetBool(IsIdle, true);
+                        animator.SetBool(IsWalk, false);
+                    }
+                    break;
+                case MeleeAttackState.WALK:
+                    {
+                        animator.SetBool(IsIdle, false);
+                        animator.SetBool(IsWalk, true);
+                    }
+                    break;
+                case MeleeAttackState.Attack_ONE:
                     {
                         animator.SetTrigger(IsAttackOne);
+                        animator.SetBool(IsWalk, false);
                     }
                     break;
-                case PlayerAttackState.Attack_TWO:
+                case MeleeAttackState.Attack_TWO:
                     {
                         animator.SetTrigger(IsAttackTwo);
+                        animator.SetBool(IsWalk, false);
                     }
                     break;
-                case PlayerAttackState.Attack_THREE:
+                case MeleeAttackState.Attack_THREE:
                     {
                         animator.SetTrigger(IsAttackThree);
+                        animator.SetBool(IsWalk, false);
                     }
                     break;
-                case PlayerAttackState.DEAD:
+                case MeleeAttackState.DEAD:
                     {
                         animator.SetTrigger(IsDead);
+                        animator.SetBool(IsWalk, false);
                     }
                     break;
             }

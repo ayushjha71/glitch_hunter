@@ -8,5 +8,6 @@ namespace GlitchHunter.Enum
         SHOOTING,
         Guard,
         DRONES,
+        BOSS
     }
 }

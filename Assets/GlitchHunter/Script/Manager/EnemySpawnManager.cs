@@ -231,7 +231,7 @@ namespace GlitchHunter.Manager
                         }
                         cleanup.Initialize(this);
 
-                        Debug.Log($"Spawned {enemyPrefab.name} at {randomSpawnPoint.position} for Wave {waveIndex + 1}");
+                        Debug.Log($"Spawned {enemyPrefab.name} for Wave {waveIndex + 1}");
                     }
                 }
             }
@@ -287,7 +287,7 @@ namespace GlitchHunter.Manager
             // Show portal key message
             ShowMessage($"Portal Key {waveIndex + 1} spawned! Find it to win!");
 
-            Debug.Log($"Key {waveIndex + 1} spawned at position: {keySpawnPoint.position}");
+            Debug.Log($"Key {waveIndex + 1} spawned at position: ");
         }
 
         public void OnKeyCollected(int waveIndex)

@@ -1,495 +1,375 @@
+using GlitchHunter.Enum;
+using GlitchHunter.Handler;
+using GlitchHunter.Handler.Enemy;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class EnemyMeleeCombatSystem : MonoBehaviour
+namespace GlitchHunter.Handler.Enemy.MeleeCombat
 {
-    [Header("Detection Settings")]
-    [SerializeField] private float minDetectionRange = 5f;
-    [SerializeField] private float maxDetectionRange = 8f;
-    [SerializeField] private LayerMask playerLayer;
-
-    [Header("Attack Distances")]
-    [SerializeField] private float closeAttackDistance = 2f;
-    [SerializeField] private float mediumAttackDistance = 4f;
-
-    [Header("Movement Settings")]
-    [SerializeField] private float moveSpeed = 3f;
-    [SerializeField] private float rotationSpeed = 5f;
-    [SerializeField] private float stoppingDistance = 1.5f;
-
-    [Header("Third Attack Settings")]
-    [SerializeField] private float thirdAttackChargeTime = 3f;
-    [SerializeField] private Slider chargeSlider;
-
-    [Header("Attack Cooldowns")]
-    [SerializeField] private float attack1Cooldown = 1f;
-    [SerializeField] private float attack2Cooldown = 1.5f;
-    [SerializeField] private float attack3Cooldown = 2f;
-
-    [Header("Debug")]
-    [SerializeField] private bool showGizmos = true;
-
-    // Components
-    private Animator animator;
-    private Rigidbody rb;
-    private Transform player;
-
-    // State Management
-    private EnemyState currentState = EnemyState.Idle;
-    private float distanceToPlayer;
-    private bool isPlayerInRange;
-    private bool canAttack = true;
-
-    // Third Attack System
-    private float chargeTimer = 0f;
-    private bool isChargingThirdAttack = false;
-    private bool canUseThirdAttack = true;
-
-    // Attack Cooldown Timers
-    private float attack1Timer;
-    private float attack2Timer;
-    private float attack3Timer;
-
-    // Animation Hash IDs (for performance)
-    private int isIdleHash;
-    private int isIdleCombatHash;
-    private int isWalkHash;
-    private int attack1Hash;
-    private int attack2Hash;
-    private int attack3Hash;
-
-    public enum EnemyState
+    public class EnemyMeleeCombatSystem : MonoBehaviour
     {
-        Idle,
-        Alert,
-        Chasing,
-        Attacking,
-        ChargingAttack
-    }
+        [Header("References")]
+        [SerializeField] private Animator animator;
+        [SerializeField] private EnemyHealthHandler enemyHealth;
+        [SerializeField] private EnemyMovementHandler enemyMovement;
 
-    void Start()
-    {
-        InitializeComponents();
-        InitializeAnimationHashes();
-        SetupChargeSlider();
-        FindPlayer();
-    }
+        [Header("Attack Settings")]
+        [SerializeField] private float attackRange = 2f;
+        [SerializeField] private float minAttackDistance = 0.8f;
+        [SerializeField] private float attackCooldown = 2f;
 
-    void Update()
-    {
-        if (player == null) return;
+        [Header("Detection Settings")]
+        [SerializeField] private LayerMask playerLayer;
+        [SerializeField] private float detectionAngle = 360f;
+        [SerializeField] private float heightTolerance = 1.5f;
+        [SerializeField] private float detectionRange = 10f;
 
-        UpdateDistanceToPlayer();
-        UpdateCooldownTimers();
-        HandleStateLogic();
-        UpdateAnimatorParameters();
-    }
+        // Animation hashes
+        private readonly int IsIdle = Animator.StringToHash("IsIdleComat");
+        private readonly int IsWalk = Animator.StringToHash("IsWalk");
+        private readonly int IsAttackOne = Animator.StringToHash("Attack_1");
+        private readonly int IsAttackTwo = Animator.StringToHash("Attack_2");
+        private readonly int IsAttackThree = Animator.StringToHash("Attack_3");
+        private readonly int IsDead = Animator.StringToHash("IsDead");
 
-    void FixedUpdate()
-    {
-        HandleMovement();
-    }
+        // Combat states
+        private float lastAttackTime;
+        private bool isAttacking = false;
+        private bool playerInAttackRange = false;
+        private bool playerInMinAttackDistance = false;
+        private bool playerInDetectionRange = false;
+        private Transform playerTarget;
 
-    #region Initialization
+        // Special attack logic
+        private bool needsSpecialAttack = false;
+        private float lastHealthCheckPoint;
+        private bool waitingForSpecialAttack = false;
+        private bool isInSpecialAttackSequence = false;
 
-    private void InitializeComponents()
-    {
-        animator = GetComponent<Animator>();
-        rb = GetComponent<Rigidbody>();
-
-        if (animator == null)
+        private void Awake()
         {
-            Debug.LogError("Animator component not found on " + gameObject.name);
+            if (enemyHealth == null)
+                enemyHealth = GetComponent<EnemyHealthHandler>();
+
+            if (enemyMovement == null)
+                enemyMovement = GetComponent<EnemyMovementHandler>();
+
+            lastHealthCheckPoint = enemyHealth.MaxHealth;
         }
 
-        if (rb == null)
+        private void Update()
         {
-            Debug.LogError("Rigidbody component not found on " + gameObject.name);
-        }
-    }
-
-    private void InitializeAnimationHashes()
-    {
-        isIdleHash = Animator.StringToHash("IsIdle");
-        isIdleCombatHash = Animator.StringToHash("IsIdleCombat");
-        isWalkHash = Animator.StringToHash("IsWalk");
-        attack1Hash = Animator.StringToHash("Attack_1");
-        attack2Hash = Animator.StringToHash("Attack_2");
-        attack3Hash = Animator.StringToHash("Attack_3");
-    }
-
-    private void SetupChargeSlider()
-    {
-        if (chargeSlider != null)
-        {
-            chargeSlider.gameObject.SetActive(false);
-            chargeSlider.minValue = 0f;
-            chargeSlider.maxValue = 1f;
-            chargeSlider.value = 0f;
-        }
-    }
-
-    private void FindPlayer()
-    {
-        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-        if (playerObj != null)
-        {
-            player = playerObj.transform;
-        }
-        else
-        {
-            Debug.LogWarning("Player not found! Make sure player has 'Player' tag.");
-        }
-    }
-
-    #endregion
-
-    #region Update Methods
-
-    private void UpdateDistanceToPlayer()
-    {
-        distanceToPlayer = Vector3.Distance(transform.position, player.position);
-        isPlayerInRange = distanceToPlayer <= maxDetectionRange;
-    }
-
-    private void UpdateCooldownTimers()
-    {
-        if (attack1Timer > 0) attack1Timer -= Time.deltaTime;
-        if (attack2Timer > 0) attack2Timer -= Time.deltaTime;
-        if (attack3Timer > 0) attack3Timer -= Time.deltaTime;
-
-        canAttack = attack1Timer <= 0 && attack2Timer <= 0 && attack3Timer <= 0;
-    }
-
-    #endregion
-
-    #region State Logic
-
-    private void HandleStateLogic()
-    {
-        switch (currentState)
-        {
-            case EnemyState.Idle:
-                HandleIdleState();
-                break;
-            case EnemyState.Alert:
-                HandleAlertState();
-                break;
-            case EnemyState.Chasing:
-                HandleChasingState();
-                break;
-            case EnemyState.Attacking:
-                HandleAttackingState();
-                break;
-            case EnemyState.ChargingAttack:
-                HandleChargingAttackState();
-                break;
-        }
-    }
-
-    private void HandleIdleState()
-    {
-        if (isPlayerInRange && distanceToPlayer <= minDetectionRange)
-        {
-            ChangeState(EnemyState.Alert);
-        }
-    }
-
-    private void HandleAlertState()
-    {
-        if (!isPlayerInRange)
-        {
-            ChangeState(EnemyState.Idle);
-            return;
-        }
-
-        LookAtPlayer();
-
-        // Check for immediate attacks
-        if (canAttack && distanceToPlayer <= closeAttackDistance)
-        {
-            PerformAttack1();
-        }
-        else if (canAttack && distanceToPlayer <= mediumAttackDistance)
-        {
-            PerformAttack2();
-        }
-        else if (distanceToPlayer > mediumAttackDistance && canUseThirdAttack)
-        {
-            ChangeState(EnemyState.ChargingAttack);
-        }
-        else if (distanceToPlayer > stoppingDistance)
-        {
-            ChangeState(EnemyState.Chasing);
-        }
-    }
-
-    private void HandleChasingState()
-    {
-        if (!isPlayerInRange)
-        {
-            ChangeState(EnemyState.Idle);
-            return;
-        }
-
-        LookAtPlayer();
-
-        if (distanceToPlayer <= stoppingDistance)
-        {
-            ChangeState(EnemyState.Alert);
-        }
-    }
-
-    private void HandleAttackingState()
-    {
-        // This state is handled by animation events
-        // The enemy will return to Alert state after attack animation completes
-    }
-
-    private void HandleChargingAttackState()
-    {
-        if (!isPlayerInRange)
-        {
-            ResetThirdAttackCharge();
-            ChangeState(EnemyState.Idle);
-            return;
-        }
-
-        LookAtPlayer();
-
-        // Update charge timer
-        chargeTimer += Time.deltaTime;
-        float chargeProgress = chargeTimer / thirdAttackChargeTime;
-
-        if (chargeSlider != null)
-        {
-            chargeSlider.value = chargeProgress;
-        }
-
-        // Check if charge is complete
-        if (chargeProgress >= 1f)
-        {
-            PerformAttack3();
-            ResetThirdAttackCharge();
-        }
-
-        // Cancel charge if player gets too close
-        if (distanceToPlayer <= closeAttackDistance && canAttack)
-        {
-            ResetThirdAttackCharge();
-            PerformAttack1();
-        }
-        else if (distanceToPlayer <= mediumAttackDistance && canAttack)
-        {
-            ResetThirdAttackCharge();
-            PerformAttack2();
-        }
-    }
-
-    #endregion
-
-    #region Attack Methods
-
-    private void PerformAttack1()
-    {
-        ChangeState(EnemyState.Attacking);
-        animator.SetTrigger(attack1Hash);
-        attack1Timer = attack1Cooldown;
-        Debug.Log("Performing Attack 1 - Close Range");
-    }
-
-    private void PerformAttack2()
-    {
-        ChangeState(EnemyState.Attacking);
-        animator.SetTrigger(attack2Hash);
-        attack2Timer = attack2Cooldown;
-        Debug.Log("Performing Attack 2 - Medium Range");
-    }
-
-    private void PerformAttack3()
-    {
-        ChangeState(EnemyState.Attacking);
-        animator.SetTrigger(attack3Hash);
-        attack3Timer = attack3Cooldown;
-        canUseThirdAttack = false;
-
-        // Reset third attack availability after cooldown
-        Invoke(nameof(ResetThirdAttackAvailability), attack3Cooldown + 2f);
-
-        Debug.Log("Performing Attack 3 - Charged Attack");
-    }
-
-    private void ResetThirdAttackCharge()
-    {
-        isChargingThirdAttack = false;
-        chargeTimer = 0f;
-
-        if (chargeSlider != null)
-        {
-            chargeSlider.gameObject.SetActive(false);
-            chargeSlider.value = 0f;
-        }
-    }
-
-    private void ResetThirdAttackAvailability()
-    {
-        canUseThirdAttack = true;
-    }
-
-    #endregion
-
-    #region Movement and Rotation
-
-    private void HandleMovement()
-    {
-        if (currentState == EnemyState.Chasing)
-        {
-            Vector3 direction = (player.position - transform.position).normalized;
-            direction.y = 0; // Keep movement on horizontal plane
-
-            Vector3 targetPosition = transform.position + direction * moveSpeed * Time.fixedDeltaTime;
-            rb.MovePosition(targetPosition);
-        }
-    }
-
-    private void LookAtPlayer()
-    {
-        Vector3 direction = (player.position - transform.position).normalized;
-        direction.y = 0; // Keep rotation on horizontal plane
-
-        if (direction != Vector3.zero)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(direction);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation,
-                rotationSpeed * Time.deltaTime);
-        }
-    }
-
-    #endregion
-
-    #region Animator Updates
-
-    private void UpdateAnimatorParameters()
-    {
-        // Reset all boolean parameters
-        animator.SetBool(isIdleHash, false);
-        animator.SetBool(isIdleCombatHash, false);
-        animator.SetBool(isWalkHash, false);
-
-        // Set appropriate parameter based on current state
-        switch (currentState)
-        {
-            case EnemyState.Idle:
-                animator.SetBool(isIdleHash, true);
-                break;
-            case EnemyState.Alert:
-            case EnemyState.ChargingAttack:
-                animator.SetBool(isIdleCombatHash, true);
-                break;
-            case EnemyState.Chasing:
-                animator.SetBool(isWalkHash, true);
-                break;
-            case EnemyState.Attacking:
-                // Attack triggers are handled in attack methods
-                break;
-        }
-    }
-
-    #endregion
-
-    #region State Management
-
-    private void ChangeState(EnemyState newState)
-    {
-        if (currentState == newState) return;
-
-        ExitCurrentState();
-        currentState = newState;
-        EnterNewState();
-
-        Debug.Log($"Enemy state changed to: {newState}");
-    }
-
-    private void ExitCurrentState()
-    {
-        switch (currentState)
-        {
-            case EnemyState.ChargingAttack:
-                ResetThirdAttackCharge();
-                break;
-        }
-    }
-
-    private void EnterNewState()
-    {
-        switch (currentState)
-        {
-            case EnemyState.ChargingAttack:
-                isChargingThirdAttack = true;
-                if (chargeSlider != null)
-                {
-                    chargeSlider.gameObject.SetActive(true);
-                }
-                break;
-        }
-    }
-
-    #endregion
-
-    #region Animation Events
-
-    // Call this method from animation events when attack animations complete
-    public void OnAttackComplete()
-    {
-        ChangeState(EnemyState.Alert);
-    }
-
-    // Call this method from animation events when damage should be dealt
-    public void OnDealDamage()
-    {
-        // Implement damage dealing logic here
-        // Check if player is within attack range and deal damage
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position + transform.forward * 1.5f,
-            1f, playerLayer);
-
-        foreach (Collider hitCollider in hitColliders)
-        {
-            if (hitCollider.CompareTag("Player"))
+            if (enemyHealth.IsDead())
             {
-                // Deal damage to player
-                Debug.Log("Damage dealt to player!");
-                // Add your damage dealing code here
-                // hitCollider.GetComponent<PlayerHealth>()?.TakeDamage(damageAmount);
+                UpdateAnimatorState(MeleeAttackState.DEAD);
+                return;
+            }
+
+            CheckPlayerPositions();
+            CheckSpecialAttackCondition();
+            HandleCombatLogic();
+            HandleMovementState();
+        }
+
+        private void CheckPlayerPositions()
+        {
+            playerInAttackRange = false;
+            playerInMinAttackDistance = false;
+            playerInDetectionRange = false;
+
+            // Don't update target positions during attack animations
+            if (isAttacking) return;
+
+            Transform previousTarget = playerTarget;
+            bool foundPlayerInRange = false;
+
+            // Check detection range first (since it's larger than attack range)
+            Collider[] detectedPlayers = Physics.OverlapSphere(transform.position, detectionRange, playerLayer);
+            foreach (Collider playerCollider in detectedPlayers)
+            {
+                if (IsValidTarget(playerCollider.transform))
+                {
+                    playerTarget = playerCollider.transform;
+                    playerInDetectionRange = true;
+                    foundPlayerInRange = true;
+                    break;
+                }
+            }
+
+            // Only check attack range if player is in detection range
+            if (playerInDetectionRange)
+            {
+                Collider[] hitPlayers = Physics.OverlapSphere(transform.position, attackRange, playerLayer);
+                foreach (Collider playerCollider in hitPlayers)
+                {
+                    if (IsValidTarget(playerCollider.transform))
+                    {
+                        playerTarget = playerCollider.transform;
+                        playerInAttackRange = true;
+
+                        float distance = Vector3.Distance(transform.position, playerTarget.position);
+                        if (distance <= minAttackDistance)
+                        {
+                            playerInMinAttackDistance = true;
+                        }
+                        break;
+                    }
+                }
+            }
+
+            // If we didn't find any valid players in detection range, clear the target
+            if (!foundPlayerInRange)
+            {
+                playerInDetectionRange = false;
+                playerTarget = null;
+            }
+            // Keep previous target if we lost detection but were previously tracking
+            else if (!playerInDetectionRange && previousTarget != null)
+            {
+                playerTarget = previousTarget;
+                playerInDetectionRange = true;
             }
         }
+
+        private bool IsValidTarget(Transform player)
+        {
+            if (player == null) return false;
+
+            Vector3 directionToPlayer = player.position - transform.position;
+            float distance = directionToPlayer.magnitude;
+
+            // Check height tolerance
+            if (Mathf.Abs(player.position.y - transform.position.y) > heightTolerance) return false;
+
+            // Check angle
+            float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
+            if (angleToPlayer > detectionAngle / 2f) return false;
+
+            // Check line of sight
+            if (!HasLineOfSight(player)) return false;
+
+            return true;
+        }
+
+        private void CheckSpecialAttackCondition()
+        {
+            if (isInSpecialAttackSequence) return;
+
+            float currentHealth = enemyHealth.CurrentHealth;
+
+            // Check if health dropped below 50
+            if (currentHealth <= 50 && !needsSpecialAttack && !waitingForSpecialAttack)
+            {
+                needsSpecialAttack = true;
+                waitingForSpecialAttack = true;
+                return;
+            }
+
+            // Check if health crossed a 100-point threshold
+            float currentHealthCheckPoint = Mathf.Floor(currentHealth / 100) * 100;
+            if (currentHealthCheckPoint < lastHealthCheckPoint && !needsSpecialAttack && !waitingForSpecialAttack)
+            {
+                needsSpecialAttack = true;
+                waitingForSpecialAttack = true;
+                lastHealthCheckPoint = currentHealthCheckPoint;
+            }
+        }
+
+        private void HandleCombatLogic()
+        {
+            // Check if cooldown is still active
+            if (Time.time < lastAttackTime + attackCooldown)
+            {
+                isAttacking = false;
+                UpdateAnimatorState(MeleeAttackState.IDLE);
+                return;
+            }
+
+            // Priority 1: Special attack if needed and player is in range or we're in the sequence
+            if (needsSpecialAttack)
+            {
+                if (playerInAttackRange || isInSpecialAttackSequence)
+                {
+                    PerformSpecialAttack();
+                    return;
+                }
+                else if (playerInDetectionRange)
+                {
+                    // Chase player to get in range for special attack
+                    return;
+                }
+            }
+
+            // Priority 2: Normal attacks if player is in range
+            if (playerInAttackRange)
+            {
+                if (playerInMinAttackDistance)
+                {
+                    PerformAttack(MeleeAttackState.Attack_ONE);
+                }
+                else
+                {
+                    PerformAttack(MeleeAttackState.Attack_TWO);
+                }
+            }
+        }
+
+        private void HandleMovementState()
+        {
+            if (isAttacking)
+            {
+                // Only stop movement for normal attacks
+                if (!isInSpecialAttackSequence)
+                {
+                    enemyMovement.StopMovement();
+                }
+                return;
+            }
+
+            if (playerTarget != null)
+            {
+                enemyMovement.SetTarget(playerTarget);
+
+                if (playerInAttackRange)
+                {
+                    // Stop and look at player when in attack range
+                    enemyMovement.LookAtTarget(playerTarget.position);
+                    enemyMovement.StopMovement();
+                    UpdateAnimatorState(MeleeAttackState.IDLE);
+                }
+                else if ((playerInDetectionRange && !isInSpecialAttackSequence) || (needsSpecialAttack && !isInSpecialAttackSequence))
+                {
+                    // Chase player when in detection range or need special attack
+                    enemyMovement.MoveToTarget();
+                    UpdateAnimatorState(MeleeAttackState.WALK);
+                    Debug.Log("Player walking state true");
+                }
+                else
+                {
+                    // No target, go idle
+                    enemyMovement.StopMovement();
+                    UpdateAnimatorState(MeleeAttackState.IDLE);
+                }
+            }
+            else
+            {
+                // No target at all
+                enemyMovement.StopMovement();
+                UpdateAnimatorState(MeleeAttackState.IDLE);
+            }
+        }
+
+        private void PerformAttack(MeleeAttackState attackType)
+        {
+            isAttacking = true;
+            lastAttackTime = Time.time;
+            UpdateAnimatorState(attackType);
+        }
+
+        private void PerformSpecialAttack()
+        {
+            isAttacking = true;
+            isInSpecialAttackSequence = true;
+            lastAttackTime = Time.time;
+            UpdateAnimatorState(MeleeAttackState.Attack_THREE);
+        }
+
+        private void UpdateAnimatorState(MeleeAttackState state)
+        {
+            // Reset all triggers first to prevent overlap
+            animator.ResetTrigger(IsAttackOne);
+            animator.ResetTrigger(IsAttackTwo);
+            animator.ResetTrigger(IsAttackThree);
+            animator.ResetTrigger(IsDead);
+
+            switch (state)
+            {
+                case MeleeAttackState.IDLE:
+                    animator.SetBool(IsIdle, true);
+                    animator.SetBool(IsWalk, false);
+                    break;
+                case MeleeAttackState.WALK:
+                    animator.SetBool(IsIdle, false);
+                    animator.SetBool(IsWalk, true);
+                    break;
+                case MeleeAttackState.Attack_ONE:
+                    animator.SetTrigger(IsAttackOne);
+                    animator.SetBool(IsIdle, false);
+                    animator.SetBool(IsWalk, false);
+                    break;
+                case MeleeAttackState.Attack_TWO:
+                    animator.SetTrigger(IsAttackTwo);
+                    animator.SetBool(IsIdle, false);
+                    animator.SetBool(IsWalk, false);
+                    break;
+                case MeleeAttackState.Attack_THREE:
+                    animator.SetTrigger(IsAttackThree);
+                    animator.SetBool(IsIdle, false);
+                    animator.SetBool(IsWalk, false);
+                    break;
+                case MeleeAttackState.DEAD:
+                    animator.SetTrigger(IsDead);
+                    animator.SetBool(IsIdle, false);
+                    animator.SetBool(IsWalk, false);
+                    break;
+            }
+        }
+
+        // Animation Event - Called during attack animations to deal damage
+        public void OnAttackHit(float damage, PlayerHealthHandler playerHealth)
+        {
+            if (!playerInAttackRange || playerTarget == null) return;
+
+            float distance = Vector3.Distance(transform.position, playerTarget.position);
+            if (distance > attackRange * 1.2f) return;
+
+            if (playerHealth != null)
+            {
+                playerHealth.TakeDamage(damage);
+            }
+        }
+
+        // Animation Event - Called when attack animation ends
+        public void OnAttackEnd(AnimationEvent animationEvent)
+        {
+            isAttacking = false;
+
+            if (isInSpecialAttackSequence)
+            {
+                isInSpecialAttackSequence = false;
+                needsSpecialAttack = false;
+                waitingForSpecialAttack = false;
+            }
+
+            UpdateAnimatorState(MeleeAttackState.IDLE);
+        }
+
+        private bool HasLineOfSight(Transform target)
+        {
+            RaycastHit hit;
+            Vector3 direction = target.position - transform.position;
+            return !Physics.Raycast(transform.position, direction, out hit, attackRange) || hit.transform == target;
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            // Attack range
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(transform.position, attackRange);
+
+            // Min attack distance
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(transform.position, minAttackDistance);
+
+            // Detection range
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireSphere(transform.position, detectionRange);
+
+            // Draw detection angle
+            Vector3 leftDir = Quaternion.Euler(0, -detectionAngle / 2, 0) * transform.forward;
+            Vector3 rightDir = Quaternion.Euler(0, detectionAngle / 2, 0) * transform.forward;
+            Gizmos.color = Color.blue;
+            Gizmos.DrawRay(transform.position, leftDir * detectionRange);
+            Gizmos.DrawRay(transform.position, rightDir * detectionRange);
+        }
     }
-
-    #endregion
-
-    #region Debug and Gizmos
-
-    private void OnDrawGizmos()
-    {
-        if (!showGizmos) return;
-
-        // Draw detection ranges
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawSphere(transform.position, minDetectionRange);
-
-        Gizmos.color = Color.red;
-        Gizmos.DrawSphere(transform.position, maxDetectionRange);
-
-        // Draw attack ranges
-        Gizmos.color = Color.blue;
-        Gizmos.DrawSphere(transform.position, closeAttackDistance);
-
-        Gizmos.color = Color.green;
-        Gizmos.DrawSphere(transform.position, mediumAttackDistance);
-
-        // Draw damage detection area
-        Gizmos.color = Color.magenta;
-        Gizmos.DrawWireSphere(transform.position + transform.forward * 1.5f, 1f);
-    }
-
-    #endregion
 }

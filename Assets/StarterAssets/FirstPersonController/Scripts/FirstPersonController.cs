@@ -13,7 +13,9 @@ namespace StarterAssets
 #endif
 	public class FirstPersonController : MonoBehaviour
 	{
-		[Header("Player")]
+        [SerializeField]
+        private GameObject playerBodyMesh;
+        [Header("Player")]
 		[Tooltip("Move speed of the character in m/s")]
 		public float MoveSpeed = 4.0f;
 		[Tooltip("Sprint speed of the character in m/s")]
@@ -55,9 +57,10 @@ namespace StarterAssets
 
 		[SerializeField]
 		private Crosshair crosshair;
-
-		// cinemachine
-		private float _cinemachineTargetPitch;
+		[SerializeField]
+		private Vector3 thirdPersonPosition = new Vector3(0f, 2.73000002f, -4.5f);
+        // cinemachine
+        private float _cinemachineTargetPitch;
 
 		// player
 		private float _speed;
@@ -95,6 +98,8 @@ namespace StarterAssets
         private bool _isFlying = false;
         private float _originalGravity;
 		private bool canActiveContols;
+		private bool mIsMeshActive = true;
+
 
         private bool IsCurrentDeviceMouse
 		{
@@ -119,6 +124,7 @@ namespace StarterAssets
 
 		private void Start()
 		{
+			playerBodyMesh.SetActive(false);
             _originalGravity = Gravity;
             _controller = GetComponent<CharacterController>();
 			_input = GetComponent<StarterAssetsInputs>();
@@ -142,6 +148,14 @@ namespace StarterAssets
             {
                 return;
             }
+
+			if (GameManager.Instance.IsMeleeCombatStarted && mIsMeshActive)
+			{
+				mIsMeshActive = false;
+				playerBodyMesh.SetActive(true);
+				CinemachineCameraTarget.transform.localPosition = thirdPersonPosition;
+            }
+
             HandleFlyingInput();
             JumpAndGravity();
 			GroundedCheck();
@@ -200,10 +214,14 @@ namespace StarterAssets
 
 			// note: Vector2's == operator uses approximation so is not floating point error prone, and is cheaper than magnitude
 			// if there is no input, set the target speed to 0
-			if (_input.move == Vector2.zero) targetSpeed = 0.0f;
+			if (_input.move == Vector2.zero)
+			{
+                GlitchHunterConstant.OnAttackStateChange(GlitchHunter.Enum.MeleeAttackState.IDLE);
+                targetSpeed = 0.0f;
+			}
 
-			// a reference to the players current horizontal velocity
-			float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
+				// a reference to the players current horizontal velocity
+				float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
 
 			float speedOffset = 0.1f;
 			float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
@@ -233,6 +251,7 @@ namespace StarterAssets
 				// move
 				inputDirection = transform.right * _input.move.x + transform.forward * _input.move.y;
 				crosshair.SetScale(CrosshairScale.Walk, 2);
+				GlitchHunterConstant.OnAttackStateChange(GlitchHunter.Enum.MeleeAttackState.WALK);
             }
 
 			// move the player
@@ -276,6 +295,7 @@ namespace StarterAssets
                 {
                     // the square root of H * -2 * G = how much velocity needed to reach desired height
                     _verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
+					GlitchHunterConstant.OnAttackStateChange(GlitchHunter.Enum.MeleeAttackState.IDLE);
                 }
 
                 // jump timeout

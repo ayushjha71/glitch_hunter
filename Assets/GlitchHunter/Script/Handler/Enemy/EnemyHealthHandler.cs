@@ -18,6 +18,9 @@ namespace GlitchHunter.Handler.Enemy
         private float mCurrentHealth;
         private bool isDead = false;
 
+        public float CurrentHealth => mCurrentHealth;
+        public float MaxHealth => maxHealth;
+
         private void Start()
         {
             mCurrentHealth = maxHealth;
@@ -45,7 +48,7 @@ namespace GlitchHunter.Handler.Enemy
             {
                 currentAgent.enabled = false;
             }
-            DeadEffect();
+            StartCoroutine(DeadEffect());
         }
 
         private void DeadEffectBaseOnEnemyType(EnemyType type)

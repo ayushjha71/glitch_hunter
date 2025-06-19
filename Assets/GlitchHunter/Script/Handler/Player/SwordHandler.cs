@@ -1,4 +1,5 @@
 using GlitchHunter.Constant;
+using GlitchHunter.Enum;
 using GlitchHunter.Handler.Enemy;
 using GlitchHunter.Manager;
 using UnityEngine;
@@ -45,17 +46,17 @@ namespace GlitchHunter.Handler.Player
         {
             if (Input.GetKey(KeyCode.Mouse0))
             {
-                GlitchHunterConstant.OnAttackStateChange?.Invoke(PlayerAttackState.Attack_ONE);
+                GlitchHunterConstant.OnAttackStateChange?.Invoke(MeleeAttackState.Attack_ONE);
             }
 
             if (Input.GetKeyDown(KeyCode.F))
             {
-                GlitchHunterConstant.OnAttackStateChange?.Invoke(PlayerAttackState.Attack_TWO);
+                GlitchHunterConstant.OnAttackStateChange?.Invoke(MeleeAttackState.Attack_TWO);
             }
 
             if (Input.GetKeyDown(KeyCode.R))
             {
-                GlitchHunterConstant.OnAttackStateChange?.Invoke(PlayerAttackState.Attack_THREE);
+                GlitchHunterConstant.OnAttackStateChange?.Invoke(MeleeAttackState.Attack_THREE);
             }
         }
     }

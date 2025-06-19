@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 using DG.Tweening;
-using GlitchHunter.Handler.Player;
+using GlitchHunter.Enum;
 
 namespace GlitchHunter.Constant
 {
@@ -16,7 +16,7 @@ namespace GlitchHunter.Constant
         public static Action OnGameOver;
 
         //Combat 
-        public static Action<PlayerAttackState> OnAttackStateChange;
+        public static Action<MeleeAttackState> OnAttackStateChange;
 
 
         public static Action<int> OnCollectKey;
