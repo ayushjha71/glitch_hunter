@@ -7,6 +7,7 @@ using GlitchHunter.Handler.Enemy;
 using GlitchHunter.Constant;
 using GlitchHunter.Manager;
 using Unity.Cinemachine;
+using Unity.VisualScripting;
 
 namespace GlitchHunter.Handler
 {
@@ -56,6 +57,7 @@ namespace GlitchHunter.Handler
         private bool _isReloading = false;
         private bool _isZoomed = false;
         private bool canShoot = false;
+        private bool canDestroy = false;
 
         private Camera _playerCamera;
         private Coroutine _reloadCoroutine;
@@ -81,6 +83,16 @@ namespace GlitchHunter.Handler
 
         private void Update()
         {
+            if (GameManager.Instance.IsMeleeCombatStarted)
+            {
+                if (!canDestroy)
+                {
+                    canDestroy = true;
+                    Destroy(gunContainerTransform);
+                }
+                return;
+            }
+
             if (Input.GetKeyDown(KeyCode.R) && currentAmmo < maxAmmo && !_isReloading)
             {
                 StartReload();

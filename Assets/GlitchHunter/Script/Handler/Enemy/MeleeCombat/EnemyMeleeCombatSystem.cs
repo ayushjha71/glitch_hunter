@@ -11,6 +11,7 @@ namespace GlitchHunter.Handler.Enemy.MeleeCombat
         [SerializeField] private Animator animator;
         [SerializeField] private EnemyHealthHandler enemyHealth;
         [SerializeField] private EnemyMovementHandler enemyMovement;
+        [SerializeField] private SphericalMovement sphericalMovement;
 
         [Header("Attack Settings")]
         [SerializeField] private float attackRange = 2f;
@@ -45,6 +46,9 @@ namespace GlitchHunter.Handler.Enemy.MeleeCombat
         private bool waitingForSpecialAttack = false;
         private bool isInSpecialAttackSequence = false;
 
+        private bool isAletMode = true;
+
+
         private void Awake()
         {
             if (enemyHealth == null)
@@ -62,6 +66,12 @@ namespace GlitchHunter.Handler.Enemy.MeleeCombat
             {
                 UpdateAnimatorState(MeleeAttackState.DEAD);
                 return;
+            }
+
+            if (playerInAttackRange && isAletMode)
+            {
+                isAletMode = false;
+                sphericalMovement.StartMoving();
             }
 
             CheckPlayerPositions();
