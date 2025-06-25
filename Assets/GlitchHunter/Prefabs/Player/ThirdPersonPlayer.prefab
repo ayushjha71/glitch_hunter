@@ -527,6 +527,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0b54a7dc72f3d5419ca3cea058e2b3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cursorLocked: 0
+  cursorInputForLook: 1
 --- !u!114 &5776877026205244234
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -575,7 +577,7 @@ MonoBehaviour:
   FlyDeceleration: 15
   VerticalFlySpeed: 6
   FlyRotationSmoothTime: 0.08
-  MinFlyHeight: 1
+  MinFlyHeight: 0.5
   FlyActivationDelay: 0.3
   AscentAcceleration: 5
   DescentAcceleration: 8
@@ -650,7 +652,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5811940520822496465}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ab826d47f5cabee44bd87f2848dc9a4c, type: 3}
   m_Name: 

@@ -9,7 +9,6 @@ namespace GlitchHunter.Handler.Player
     {
         [Header("Mouse Cursor Settings")]
         public bool cursorLocked = true;
-        public bool cursorInputForLook = true;
 
         public Vector2 MoveInput { get; private set; }
         public Vector2 LookInput { get; private set; }

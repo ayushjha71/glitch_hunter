@@ -113,7 +113,7 @@ GameObject:
   - component: {fileID: 199073474103781340}
   - component: {fileID: 198150126781795564}
   m_Layer: 0
-  m_Name: pf_vfx-ult_xp-action_psys_oneshot_explosion8
+  m_Name: EnemyDestroyParticle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
