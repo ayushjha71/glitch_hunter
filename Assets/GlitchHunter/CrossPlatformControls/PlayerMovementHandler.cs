@@ -1,5 +1,7 @@
 using UnityEngine;
 using GlitchHunter.Constant;
+using GlitchHunter.Manager;
+using UnityEngine.Windows;
 
 namespace GlitchHunter.Handler.Player
 {
@@ -112,6 +114,11 @@ namespace GlitchHunter.Handler.Player
 
         private void Update()
         {
+            if (!GameManager.Instance.IsGameStarted)
+            {
+                return;
+            }
+
             mHasAnimator = TryGetComponent(out mAnimator);
 
             // Always check grounded state
@@ -176,6 +183,11 @@ namespace GlitchHunter.Handler.Player
         private void OnReceivedSprintInput(bool input)
         {
             mCanSprint = input;
+        }
+
+        private void CanStartControls(bool active)
+        {
+            GlitchHunterConstant.SetCursorState(true);
         }
 
         public void SetFlying(bool isFlying)

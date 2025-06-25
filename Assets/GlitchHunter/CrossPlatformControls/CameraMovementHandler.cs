@@ -1,5 +1,6 @@
 using GlitchHunter.Constant;
 using GlitchHunter.Enum;
+using GlitchHunter.Manager;
 using UnityEngine;
 
 
@@ -93,6 +94,11 @@ namespace GlitchHunter.Handler.Player
 
         private void LateUpdate()
         {
+            if (!GameManager.Instance.IsGameStarted)
+            {
+                return;
+            }
+
             if (GlitchHunterConstant.CurrentControllerType == ControllerType.FIRST_PERSON)
             {
                 FirstPersonMoveCamera();

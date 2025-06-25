@@ -295,7 +295,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8016145082309934292}
   m_Layer: 0
-  m_Name: ThirdPersonPlayer
+  m_Name: ThirdPersonPlayerBase
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

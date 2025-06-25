@@ -38,6 +38,11 @@ namespace GlitchHunter.Constant
 
         public static int ENEMY_WAVE_COMPLETED_INDEX = 0;
 
+        public static void SetCursorState(bool newState)
+        {
+            Cursor.lockState = newState ? CursorLockMode.Locked : CursorLockMode.None;
+        }
+
         public static void FadeIn(CanvasGroup canvasGroup, float endValue, float duration, Action OnCompleted)
         {
             canvasGroup.DOFade(endValue, duration).OnComplete(() => { OnCompleted?.Invoke(); });

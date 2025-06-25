@@ -1,11 +1,16 @@
 using GlitchHunter.Constant;
 using GlitchHunter.Manager;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace GlitchHunter.Handler.Player
 {
     public class PlayerInputHandler : MonoBehaviour
     {
+        [Header("Mouse Cursor Settings")]
+        public bool cursorLocked = true;
+        public bool cursorInputForLook = true;
+
         public Vector2 MoveInput { get; private set; }
         public Vector2 LookInput { get; private set; }
         public bool IsJumpInput { get; private set; }
@@ -84,6 +89,11 @@ namespace GlitchHunter.Handler.Player
                 IsZoomInput = false;
                 GlitchHunterConstant.OnZoomInput?.Invoke(IsZoomInput);
             }
+        }
+
+        private void OnApplicationFocus(bool hasFocus)
+        {
+            GlitchHunterConstant.SetCursorState(cursorLocked);
         }
     }
 }

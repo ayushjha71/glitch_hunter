@@ -74,7 +74,7 @@ namespace GlitchHunter.UI
 
         private void OnPlyerHitImpact()
         {
-            StopCoroutine(HitImpactCorutine);
+           // StopCoroutine(HitImpactCorutine);
             HitImpactCorutine = StartCoroutine(ShowHitImpact());
         }
 
@@ -88,8 +88,9 @@ namespace GlitchHunter.UI
 
         private IEnumerator ShowHitImpact()
         {
+           // StopCoroutine(HitImpactCorutine);
             hitImpactPanel.SetActive(true);
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSeconds(0.01f);
             hitImpactPanel.SetActive(false);
         }
 

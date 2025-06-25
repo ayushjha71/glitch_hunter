@@ -1,0 +1,80 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8011640345581843794
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5669991763075567092}
+  - component: {fileID: 2466204265418980294}
+  - component: {fileID: 5700962470404897299}
+  m_Layer: 0
+  m_Name: UIManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5669991763075567092
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8011640345581843794}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2466204265418980294
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8011640345581843794}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88da13ce72fc9a04db50c271d2590d99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainCanvas: {fileID: 0}
+  mainScreen: {fileID: 0}
+  duration: 0.5
+  startBtn: {fileID: 0}
+  cutSceneCanvas: {fileID: 0}
+  videoPlayer: {fileID: 0}
+  inGamePanel: {fileID: 0}
+  uiTextScriptableObject: {fileID: 11400000, guid: bee3779a7c37238429fbc8d5100c78ac, type: 2}
+  promptPanel: {fileID: 0}
+  promptText: {fileID: 0}
+  OkBtn: {fileID: 0}
+  audioSource: {fileID: 0}
+  gameOverPanel: {fileID: 0}
+--- !u!114 &5700962470404897299
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8011640345581843794}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f330443fc893d24cbd55b4b39b88c0d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hitImpactPanel: {fileID: 0}
+  promtPanel: {fileID: 0}
+  promtText: {fileID: 0}
+  ammoText: {fileID: 0}
+  reloadStatusText: {fileID: 0}
+  reloadProgressSlider: {fileID: 0}
+  healthProgressSlider: {fileID: 0}
+  playerUICanvasGroup: {fileID: 0}
