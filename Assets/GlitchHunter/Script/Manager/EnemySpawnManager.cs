@@ -6,6 +6,7 @@ using GlitchHunter.Enum;
 using GlitchHunter.Handler.Enemy;
 using UnityEngine.UI;
 using TMPro;
+using GlitchHunter.Constant;
 
 namespace GlitchHunter.Manager
 {
@@ -308,7 +309,8 @@ namespace GlitchHunter.Manager
             }
 
             // Destroy all enemies from this specific wave with particle effects
-           // StartCoroutine(DestroyWaveEnemies(waveIndex));
+            StartCoroutine(DestroyWaveEnemies(waveIndex));
+            GlitchHunterConstant.ENEMY_WAVE_COMPLETED_INDEX = waveIndex;
         }
 
         IEnumerator DestroyWaveEnemies(int waveIndex)

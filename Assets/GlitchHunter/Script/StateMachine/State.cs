@@ -282,7 +282,6 @@ namespace GlitchHunter.StateMachine
 
         private void ShootAtPlayer(Vector3 directionToPlayer)
         {
-            Debug.Log("Shooting Player" + mShootableMask.ToString());
             // Play shooting sound
             mAudioSource.Play();
             // Raycast towards player
@@ -293,13 +292,13 @@ namespace GlitchHunter.StateMachine
                 var playerHealth = hit.transform.GetComponent<PlayerHealthHandler>();
                 if (playerHealth != null)
                 {
+                    GlitchHunterConstant.OnPlayerHitImpact?.Invoke();
                     if (playerHealth.IsDead())
                     {
-                        Debug.Log("Player Dead Set another state");
                         state = new PatrolState(npc, navMeshAgent, animator, playerTransform);
                     }
                     playerHealth.TakeDamage(mDamagePerShot);
-                    Debug.Log($"NPC hit player for {mDamagePerShot} damage");
+                  //  Debug.Log($"NPC hit player for {mDamagePerShot} damage");
                 }
             }
         }

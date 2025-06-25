@@ -7,6 +7,9 @@ namespace GlitchHunter.Manager
     {
         [SerializeField]
         private GameObject playerPrefab;
+        [SerializeField]
+        private Transform playerSpawnPoint;
+
         private float gameDuration = 300;
         private float mGameTime = 0;
 
@@ -19,11 +22,22 @@ namespace GlitchHunter.Manager
             set;
         }
 
+        public Vector3 WorldCenter
+        {
+            get;
+            set;
+        }
+
+        public float WorldRadius
+        {
+            get;
+            set;
+        }
+
         public bool IsGameStarted = false;
         public bool IsMeleeCombatStarted = false;
         [HideInInspector] public bool IsEquipped = false;
         [HideInInspector] public AudioSource AudioSource;
-
 
         public static GameManager Instance;
 
@@ -67,8 +81,8 @@ namespace GlitchHunter.Manager
 
         private void SpawnPlayer()
         {
-            GameObject obj = Instantiate(playerPrefab);
-            PlayerPrefab = obj;
+            GameObject obj = Instantiate(playerPrefab, playerSpawnPoint.position, playerSpawnPoint.rotation);
+          //  PlayerPrefab = obj;
         }
 
         public void EndGame()

@@ -1,7 +1,7 @@
-using GlitchHunter.Constant;
-using GlitchHunter.Manager;
-using StarterAssets;
 using UnityEngine;
+using GlitchHunter.Manager;
+using GlitchHunter.Constant;
+using GlitchHunter.Handler.Player;
 
 namespace GlitchHunter.Handler
 {
@@ -16,13 +16,13 @@ namespace GlitchHunter.Handler
         [SerializeField] private AudioClip deathSound;
         [SerializeField] private GameObject deathEffect;
 
-        private FirstPersonController playerController;
+        private PlayerMovementHandler playerController;
         private ShootingHandler weaponsHandler;
 
         private void Awake()
         {
             currentHealth = maxHealth;
-            playerController = GetComponent<FirstPersonController>();
+            playerController = GetComponent<PlayerMovementHandler>();
             weaponsHandler = GetComponent<ShootingHandler>();
             GlitchHunterConstant.OnUpdateHealthSlider?.Invoke(currentHealth);
         }

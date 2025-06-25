@@ -1,5 +1,6 @@
 using GlitchHunter.Constant;
 using GlitchHunter.Manager;
+using GlitchHunter.Weapon;
 using UnityEngine;
 
 namespace GlitchHunter.Handler
@@ -19,7 +20,6 @@ namespace GlitchHunter.Handler
         [SerializeField]
         private RotateObjectHandler rotationHandler;
 
-
         private Transform gunContainerTransform;
         private Transform camTransform;
         private Transform playerTransform;
@@ -35,7 +35,7 @@ namespace GlitchHunter.Handler
                 IsInitialized = true;
                 camTransform = Camera.main.transform;
                 playerTransform = GameManager.Instance.PlayerPrefab.transform;
-                gunContainerTransform = GameManager.Instance.PlayerPrefab.GetComponent<ShootingHandler>().gunContainerTransform;
+                gunContainerTransform = GameManager.Instance.PlayerPrefab.GetComponentInParent<GunContainer>().GunContainers.transform;
             }
         }
 
@@ -58,7 +58,7 @@ namespace GlitchHunter.Handler
                 if (!isActivePrompt)
                 {
                     isActivePrompt = true;
-                    GlitchHunterConstant.OnShowPrompt?.Invoke("Press F To Collect");
+                    GlitchHunterConstant.OnShowPrompt?.Invoke("Press F To PickUp");
                 }
 
                 if (Input.GetKeyDown(KeyCode.F))
@@ -77,7 +77,10 @@ namespace GlitchHunter.Handler
 
         private void PickUp()
         {
-            rotationHandler.enabled = false;
+            if(rotationHandler != null)
+            {
+                rotationHandler.enabled = false;
+            }
             GameManager.Instance.IsEquipped = true;
             slotFull = true;
 

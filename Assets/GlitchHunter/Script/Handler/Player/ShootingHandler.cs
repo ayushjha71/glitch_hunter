@@ -1,13 +1,9 @@
-using StarterAssets;
-using System.Collections;
 using UnityEngine;
-using TMPro;
-using UnityEngine.UI;
-using GlitchHunter.Handler.Enemy;
-using GlitchHunter.Constant;
-using GlitchHunter.Manager;
 using Unity.Cinemachine;
-using Unity.VisualScripting;
+using System.Collections;
+using GlitchHunter.Manager;
+using GlitchHunter.Constant;
+using GlitchHunter.Handler.Enemy;
 
 namespace GlitchHunter.Handler
 {
@@ -17,7 +13,6 @@ namespace GlitchHunter.Handler
         private AudioClip fireAudioClip;
         [SerializeField]
         private Crosshair crossHair;
-        public Transform gunContainerTransform;
         [Header("Weapon Settings")]
         [Tooltip("Damage per shot")]
         public int damage = 50;
@@ -49,8 +44,6 @@ namespace GlitchHunter.Handler
         private Transform muzzleFlashTransform;
         [Tooltip("Impact effect prefab")]
         public GameObject impactEffect;
-        [SerializeField]
-        private CinemachineCamera playerFollowCamera;
 
         // Private variables
         private float _nextTimeToFire = 0f;
@@ -58,6 +51,11 @@ namespace GlitchHunter.Handler
         private bool _isZoomed = false;
         private bool canShoot = false;
         private bool canDestroy = false;
+
+        //Input 
+        private bool mShootInput = false;
+        private bool mReloadInput = false;
+        private bool mZoomInput = false;
 
         private Camera _playerCamera;
         private Coroutine _reloadCoroutine;
@@ -74,32 +72,47 @@ namespace GlitchHunter.Handler
             GlitchHunterConstant.OnUpdateAmmoUI?.Invoke(currentAmmo, maxAmmo);
             GlitchHunterConstant.OnUpdateReloadStatus?.Invoke("Attack");
             GlitchHunterConstant.OnShowPlayerUI += CanStartShooting;
+            GlitchHunterConstant.OnShootingInput += OnShootingInputReceived;
+            GlitchHunterConstant.OnWeaponReloadInput += OnReloadInputReceived;
         }
 
         private void OnDisable()
         {
             GlitchHunterConstant.OnShowPlayerUI -= CanStartShooting;
+            GlitchHunterConstant.OnShootingInput -= OnShootingInputReceived;
+            GlitchHunterConstant.OnWeaponReloadInput -= OnReloadInputReceived;
         }
 
         private void Update()
         {
+            // Only block shooting during melee combat, not during flying or movement
             if (GameManager.Instance.IsMeleeCombatStarted)
             {
-                if (!canDestroy)
-                {
-                    canDestroy = true;
-                    Destroy(gunContainerTransform);
-                }
                 return;
             }
 
-            if (Input.GetKeyDown(KeyCode.R) && currentAmmo < maxAmmo && !_isReloading)
+            if (mReloadInput && currentAmmo < maxAmmo && !_isReloading)
             {
                 StartReload();
             }
 
             HandleZoom();
             HandleShooting();
+        }
+
+        private void OnShootingInputReceived(bool shootInput)
+        {
+            mShootInput = shootInput;
+        }
+
+        private void OnReloadInputReceived(bool reloadInput)
+        {
+            mReloadInput = reloadInput;
+        }
+
+        private void OnZoomInput(bool zoomInput)
+        {
+            mZoomInput = zoomInput;
         }
 
         private void CanStartShooting(bool isShoot)
@@ -118,17 +131,19 @@ namespace GlitchHunter.Handler
 
         private void HandleShooting()
         {
-            if (_isReloading)
+            // Only check for essential blocking conditions
+            // Removed GameManager.Instance.IsEquipped check to allow shooting while flying/moving
+            if (_isReloading || !canShoot || !GameManager.Instance.IsEquipped)
                 return;
+
             // Auto fire when holding mouse button
-            if (Input.GetKey(KeyCode.Mouse0) && Time.time >= _nextTimeToFire && canShoot && GameManager.Instance.IsEquipped)
+            if (mShootInput && Time.time >= _nextTimeToFire)
             {
                 _nextTimeToFire = Time.time + fireRate;
                 Shoot();
-
             }
         }
-        
+
         private void Shoot()
         {
             crossHair.SetScale(CrosshairScale.Shoot, 1);
@@ -154,8 +169,7 @@ namespace GlitchHunter.Handler
             }
 
             // Raycast
-            if (Physics.Raycast(_playerCamera.transform.position, _playerCamera.transform.forward,
-                out RaycastHit hit, range, shootableMask))
+            if (Physics.Raycast(_playerCamera.transform.position, _playerCamera.transform.forward, out RaycastHit hit, range, shootableMask))
             {
                 hit.transform.GetComponent<EnemyHealthHandler>()?.TakeDamage(damage);
                 Debug.Log("Hit" + hit.transform.gameObject.name);
@@ -194,18 +208,9 @@ namespace GlitchHunter.Handler
 
         private void HandleZoom()
         {
-            if (Input.GetKeyDown(KeyCode.Mouse1))
-            {
-                _isZoomed = true;
-            }
-            else if (Input.GetKeyUp(KeyCode.Mouse1))
-            {
-                _isZoomed = false;
-            }
-
             // Smooth zoom transition
-            float targetFOV = _isZoomed ? zoomFOV : normalFOV;
-            playerFollowCamera.Lens.FieldOfView = Mathf.Lerp(playerFollowCamera.Lens.FieldOfView, targetFOV, zoomSpeed * Time.deltaTime);
+            float targetFOV = mZoomInput ? zoomFOV : normalFOV;
+            Camera.main.fieldOfView = Mathf.Lerp(Camera.main.fieldOfView, targetFOV, zoomSpeed * Time.deltaTime);
         }
     }
 }

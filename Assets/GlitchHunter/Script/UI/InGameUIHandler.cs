@@ -10,6 +10,8 @@ namespace GlitchHunter.UI
     public class InGameUIHandler : MonoBehaviour
     {
         [Header("UI References")]
+        [SerializeField]
+        private GameObject hitImpactPanel;
 
         [SerializeField] private CanvasGroup promtPanel;
         [SerializeField] private TMP_Text promtText;
@@ -20,6 +22,8 @@ namespace GlitchHunter.UI
         [SerializeField] private Slider healthProgressSlider;
         [SerializeField] private CanvasGroup playerUICanvasGroup;
 
+        private Coroutine HitImpactCorutine;
+
         private void OnEnable()
         {
             GlitchHunterConstant.OnUpdateHealthSlider += HealthProgressSlider;
@@ -27,7 +31,8 @@ namespace GlitchHunter.UI
             GlitchHunterConstant.OnUpdateReloadStatus += ReloadStatusText;
             GlitchHunterConstant.OnReloadSliderValue += ReloadSlider;
             GlitchHunterConstant.OnShowPlayerUI += ShowPlayerUI;
-            GlitchHunterConstant.OnShowPrompt += OnShowPromptPanel;
+            GlitchHunterConstant.OnShowPrompt += OnShowPromptPanel; 
+            GlitchHunterConstant.OnPlayerHitImpact += OnPlyerHitImpact;
         }
 
         private void OnDisable()
@@ -38,6 +43,7 @@ namespace GlitchHunter.UI
             GlitchHunterConstant.OnReloadSliderValue -= ReloadSlider;
             GlitchHunterConstant.OnShowPlayerUI -= ShowPlayerUI;
             GlitchHunterConstant.OnShowPrompt -= OnShowPromptPanel;
+            GlitchHunterConstant.OnPlayerHitImpact -= OnPlyerHitImpact;
         }
 
         private void ShowPlayerUI(bool isActive)
@@ -66,16 +72,26 @@ namespace GlitchHunter.UI
             StartCoroutine(ShowPromtPanelCorutine(msg));
         }
 
+        private void OnPlyerHitImpact()
+        {
+            StopCoroutine(HitImpactCorutine);
+            HitImpactCorutine = StartCoroutine(ShowHitImpact());
+        }
+
         private IEnumerator ShowPromtPanelCorutine(string msg)
         {
             GlitchHunterConstant.FadeIn(promtPanel, 1, 0.3f, null);
             promtText?.SetText(msg);
-            Debug.Log("Prompt panel showing");
             yield return new WaitForSeconds(5);
             GlitchHunterConstant.FadeOut(promtPanel, 0, 0.3f, null);
         }
 
-
+        private IEnumerator ShowHitImpact()
+        {
+            hitImpactPanel.SetActive(true);
+            yield return new WaitForSeconds(0.2f);
+            hitImpactPanel.SetActive(false);
+        }
 
         private void UpdateAmmoUI(int currentAmmo, int maxAmmo)
         {

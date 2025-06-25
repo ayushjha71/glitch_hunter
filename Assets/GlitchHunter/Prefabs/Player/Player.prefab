@@ -416,7 +416,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fireAudioClip: {fileID: 8300000, guid: 637e36e59f82d4bca899fe51c14721cf, type: 3}
   crossHair: {fileID: 7657516224030755583}
-  gunContainerTransform: {fileID: 6578618570543529495}
   damage: 25
   range: 100
   fireRate: 0.1
@@ -432,7 +431,6 @@ MonoBehaviour:
   muzzleFlash: {fileID: 8865077464205873500, guid: 2c22462a5cdded445a7007ed80c482b9, type: 3}
   muzzleFlashTransform: {fileID: 4406847563759458605}
   impactEffect: {fileID: 5300778849037655449, guid: 84a441c483a047148a65cad89ea8e0e1, type: 3}
-  playerFollowCamera: {fileID: 8939602043098259708}
 --- !u!114 &8106980568056305404
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1089,14 +1087,3 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8762286023885395322, guid: 9c489a8547f4d9e4387da15a4ff82c81, type: 3}
   m_PrefabInstance: {fileID: 8984145780459530319}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &8939602043098259708 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 45528908374149299, guid: 9c489a8547f4d9e4387da15a4ff82c81, type: 3}
-  m_PrefabInstance: {fileID: 8984145780459530319}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 376046490488044746}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f9dfa5b682dcd46bda6128250e975f58, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
