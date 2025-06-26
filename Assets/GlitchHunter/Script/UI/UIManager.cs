@@ -10,8 +10,6 @@ using UnityEngine.Video;
 public class UIManager : MonoBehaviour
 {
     [SerializeField]
-    private CanvasGroup mainCanvas;
-    [SerializeField]
     private CanvasGroup mainScreen;
     [SerializeField]
     private float duration = 0.5f;

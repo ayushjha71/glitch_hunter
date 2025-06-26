@@ -301,6 +301,9 @@ namespace GlitchHunter.Manager
             // Show collection message
             ShowMessage($"Portal Key {waveIndex + 1} collected! Wave cleared!");
 
+            // Notify ZoneManager about wave completion
+            ZoneManager.Instance.OnWaveCompleted(waveIndex);
+
             // Stop the wave coroutine
             if (waveCoroutines[waveIndex] != null)
             {

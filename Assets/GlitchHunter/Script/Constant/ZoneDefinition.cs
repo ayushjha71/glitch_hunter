@@ -12,6 +12,9 @@ namespace GlitchHunter.Constant
         [Tooltip("Should the zone ignore Y-axis (cylinder instead of sphere)?")]
         public bool isCylindrical = false;
 
+        [Tooltip("Which wave this zone is associated with (0 = first wave)")]
+        public int associatedWaveIndex = 0;
+
         [Header("Visualization")]
         public bool showGizmo = true;
         public Color gizmoColor = new Color(0, 1, 1, 0.3f);
@@ -19,16 +22,23 @@ namespace GlitchHunter.Constant
         // Public getters
         public Vector3 WorldCenter => transform.position;
         public float WorldRadius => zoneRadius * transform.lossyScale.x;
+        public bool IsActive { get; private set; } = true;
 
         private void Start()
         {
-            GameManager.Instance.WorldCenter = WorldCenter;
-            GameManager.Instance.WorldRadius = WorldRadius;
+            // Register this zone with the ZoneManager
+            ZoneManager.Instance.RegisterZone(this);
+        }
+
+        public void SetZoneActive(bool active)
+        {
+            IsActive = active;
+            // You could add visual effects here when zone is deactivated
         }
 
         private void OnDrawGizmos()
         {
-            if (!showGizmo) return;
+            if (!showGizmo || !IsActive) return;
 
             Gizmos.color = gizmoColor;
 

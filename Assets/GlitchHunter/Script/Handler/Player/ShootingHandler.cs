@@ -131,9 +131,7 @@ namespace GlitchHunter.Handler
 
         private void HandleShooting()
         {
-            // Only check for essential blocking conditions
-            // Removed GameManager.Instance.IsEquipped check to allow shooting while flying/moving
-            if (_isReloading || !canShoot || !GameManager.Instance.IsEquipped)
+            if (_isReloading || !canShoot)
                 return;
 
             // Auto fire when holding mouse button
