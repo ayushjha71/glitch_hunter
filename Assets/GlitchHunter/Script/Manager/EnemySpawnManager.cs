@@ -7,6 +7,7 @@ using GlitchHunter.Handler.Enemy;
 using UnityEngine.UI;
 using TMPro;
 using GlitchHunter.Constant;
+using UnityEngine.Rendering;
 
 namespace GlitchHunter.Manager
 {
@@ -39,9 +40,6 @@ namespace GlitchHunter.Manager
 
     public class EnemySpawnManager : MonoBehaviour
     {
-        [Header("General Settings")]
-        // Individual wave settings are now in EnemyData
-
         [Header("UI Settings")]
         public TMP_Text messageText; // UI Text component for messages
         public float messageDuration = 3f; // How long to show the message
@@ -59,6 +57,8 @@ namespace GlitchHunter.Manager
         private List<GameObject>[] waveEnemies; // Track enemies per wave
         private GameObject[] waveKeys; // Track keys per wave
         private Coroutine messageCoroutine;
+
+        private bool CanActivateFlying = false;
 
         void Start()
         {
@@ -286,7 +286,7 @@ namespace GlitchHunter.Manager
             }
 
             // Show portal key message
-            ShowMessage($"Portal Key {waveIndex + 1} spawned! Find it to win!");
+            ShowMessage($"Portal Key {waveIndex + 1} spawned! Find it to win!", messageDuration);
 
             Debug.Log($"Key {waveIndex + 1} spawned at position: ");
         }
@@ -299,7 +299,7 @@ namespace GlitchHunter.Manager
             Debug.Log($"Key {waveIndex + 1} collected! Destroying wave {waveIndex + 1} enemies.");
 
             // Show collection message
-            ShowMessage($"Portal Key {waveIndex + 1} collected! Wave cleared!");
+            ShowMessage($"Portal Key {waveIndex + 1} collected! Wave cleared!", messageDuration);
 
             // Notify ZoneManager about wave completion
             ZoneManager.Instance.OnWaveCompleted(waveIndex);
@@ -314,6 +314,13 @@ namespace GlitchHunter.Manager
             // Destroy all enemies from this specific wave with particle effects
             StartCoroutine(DestroyWaveEnemies(waveIndex));
             GlitchHunterConstant.ENEMY_WAVE_COMPLETED_INDEX = waveIndex;
+
+            if (!CanActivateFlying)
+            {
+                CanActivateFlying = true;
+                ShowMessage($"System Upgraded Add Fying! Hold Space to Fly", 6);
+                GlitchHunterConstant.OnActivateFlying?.Invoke();
+            }
         }
 
         IEnumerator DestroyWaveEnemies(int waveIndex)
@@ -347,7 +354,7 @@ namespace GlitchHunter.Manager
             Debug.Log($"All enemies from Wave {waveIndex + 1} destroyed!");
         }
 
-        void ShowMessage(string message)
+        void ShowMessage(string message, float delay)
         {
             if (messageText != null)
             {
@@ -361,13 +368,13 @@ namespace GlitchHunter.Manager
                 }
 
                 // Start new message display coroutine
-                messageCoroutine = StartCoroutine(HideMessageAfterDelay());
+                messageCoroutine = StartCoroutine(HideMessageAfterDelay(delay));
             }
         }
 
-        IEnumerator HideMessageAfterDelay()
+        IEnumerator HideMessageAfterDelay(float delay)
         {
-            yield return new WaitForSeconds(messageDuration);
+            yield return new WaitForSeconds(delay);
 
             if (messageText != null)
             {

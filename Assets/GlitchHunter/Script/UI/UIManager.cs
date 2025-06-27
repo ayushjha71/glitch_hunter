@@ -101,6 +101,7 @@ public class UIManager : MonoBehaviour
             // All messages shown, deactivate UI
             GlitchHunterConstant.FadeOut(promptPanel, 0, 0.3f, null);
             GlitchHunterConstant.OnShowPlayerUI?.Invoke(true);
+            GlitchHunterConstant.OnChangeBgAudio?.Invoke(2);
         }
     }
 

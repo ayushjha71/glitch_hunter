@@ -540,8 +540,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b3df41c63a014764b82007856c7e38cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MoveSpeed: 2
-  SprintSpeed: 5.335
+  MoveSpeed: 6
+  SprintSpeed: 15
   RotationSmoothTime: 0.12
   SpeedChangeRate: 10
   LandingAudioClip: {fileID: 0}
@@ -783,19 +783,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 701522282059159458, guid: 1ec64ac604fe42d40b8619b8a831e744, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.99903685
+      value: 0.9993973
       objectReference: {fileID: 0}
     - target: {fileID: 701522282059159458, guid: 1ec64ac604fe42d40b8619b8a831e744, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.034662206
+      value: 0.034594126
       objectReference: {fileID: 0}
     - target: {fileID: 701522282059159458, guid: 1ec64ac604fe42d40b8619b8a831e744, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.026835557
+      value: 0.00010022591
       objectReference: {fileID: 0}
     - target: {fileID: 701522282059159458, guid: 1ec64ac604fe42d40b8619b8a831e744, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.0019659253
+      value: -0.0028954481
       objectReference: {fileID: 0}
     - target: {fileID: 701522282059159458, guid: 1ec64ac604fe42d40b8619b8a831e744, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -803,7 +803,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 701522282059159458, guid: 1ec64ac604fe42d40b8619b8a831e744, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: -3.089
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 701522282059159458, guid: 1ec64ac604fe42d40b8619b8a831e744, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z

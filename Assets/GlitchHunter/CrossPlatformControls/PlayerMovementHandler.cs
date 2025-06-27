@@ -94,6 +94,7 @@ namespace GlitchHunter.Handler.Player
 
             // Get flying handler reference
             mFlyingHandler = GetComponent<PlayerFlyingHandler>();
+            mFlyingHandler.enabled = false;
         }
 
         private void Start()
@@ -110,6 +111,7 @@ namespace GlitchHunter.Handler.Player
             GlitchHunterConstant.OnLookInput += OnReceivedKeyboardLookInput;
             GlitchHunterConstant.OnSprintInput += OnReceivedSprintInput;
             GlitchHunterConstant.OnJumpInput += OnReceivedJumpInput;
+            GlitchHunterConstant.OnActivateFlying += OnActiveFlying;
         }
 
         private void Update()
@@ -146,6 +148,7 @@ namespace GlitchHunter.Handler.Player
             GlitchHunterConstant.OnLookInput -= OnReceivedKeyboardLookInput;
             GlitchHunterConstant.OnSprintInput -= OnReceivedSprintInput;
             GlitchHunterConstant.OnJumpInput -= OnReceivedJumpInput;
+            GlitchHunterConstant.OnActivateFlying -= OnActiveFlying;
         }
 
         private void AssignAnimationIDs()
@@ -190,6 +193,11 @@ namespace GlitchHunter.Handler.Player
             GlitchHunterConstant.SetCursorState(true);
         }
 
+        private void OnActiveFlying()
+        {
+            mFlyingHandler.enabled = true;
+        }
+
         public void SetFlying(bool isFlying)
         {
             mIsFlying = isFlying;
@@ -203,18 +211,14 @@ namespace GlitchHunter.Handler.Player
 
         private void OnReceivedJumpInput(bool input)
         {
-            // Only handle jumping for ground-based movement
-            // Let flying handler handle its own jump input
+            // If flying is active or trying to activate, let flying handler handle it
             if (mFlyingHandler != null && (mFlyingHandler.IsFlying() || mFlyingHandler.WantsToFly()))
             {
                 return;
             }
 
-            // Only allow jumping when grounded and not flying
-            if (!Grounded)
-            {
-                return;
-            }
+            // Only process jump if grounded
+            if (!Grounded) return;
 
             // For ground jumping, we want the button press, not hold
             if (input && !mCanJump)

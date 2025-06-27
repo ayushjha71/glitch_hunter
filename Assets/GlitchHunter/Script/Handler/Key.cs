@@ -5,8 +5,14 @@ namespace GlitchHunter.Handler
 {
     public class Key : MonoBehaviour
     {
+        private AudioSource mAudioSource;
         private EnemySpawnManager spawner;
         private int waveIndex;
+
+        private void Start()
+        {
+            mAudioSource = GetComponent<AudioSource>(); 
+        }
 
         public void Initialize(EnemySpawnManager enemySpawner, int wave)
         {
@@ -16,6 +22,7 @@ namespace GlitchHunter.Handler
 
         public void OnCollectKey()
         {
+            mAudioSource.Play();
             spawner.OnKeyCollected(waveIndex);
             Destroy(gameObject);
         }
