@@ -1,9 +1,8 @@
-using GlitchHunter.Constant;
-using System.Collections;
 using TMPro;
-using Unity.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
+using GlitchHunter.Constant;
 
 namespace GlitchHunter.UI
 {
@@ -32,7 +31,7 @@ namespace GlitchHunter.UI
             GlitchHunterConstant.OnReloadSliderValue += ReloadSlider;
             GlitchHunterConstant.OnShowPlayerUI += ShowPlayerUI;
             GlitchHunterConstant.OnShowPrompt += OnShowPromptPanel; 
-            GlitchHunterConstant.OnPlayerHitImpact += OnPlyerHitImpact;
+           // GlitchHunterConstant.OnPlayerHitImpact += OnPlyerHitImpact;
         }
 
         private void OnDisable()
@@ -43,7 +42,7 @@ namespace GlitchHunter.UI
             GlitchHunterConstant.OnReloadSliderValue -= ReloadSlider;
             GlitchHunterConstant.OnShowPlayerUI -= ShowPlayerUI;
             GlitchHunterConstant.OnShowPrompt -= OnShowPromptPanel;
-            GlitchHunterConstant.OnPlayerHitImpact -= OnPlyerHitImpact;
+            //GlitchHunterConstant.OnPlayerHitImpact -= OnPlyerHitImpact;
         }
 
         private void ShowPlayerUI(bool isActive)
@@ -82,7 +81,7 @@ namespace GlitchHunter.UI
         {
             GlitchHunterConstant.FadeIn(promtPanel, 1, 0.3f, null);
             promtText?.SetText(msg);
-            yield return new WaitForSeconds(5);
+            yield return new WaitForSeconds(3);
             GlitchHunterConstant.FadeOut(promtPanel, 0, 0.3f, null);
         }
 
@@ -90,7 +89,7 @@ namespace GlitchHunter.UI
         {
            // StopCoroutine(HitImpactCorutine);
             hitImpactPanel.SetActive(true);
-            yield return new WaitForSeconds(0.01f);
+            yield return new WaitForSeconds(0.05f);
             hitImpactPanel.SetActive(false);
         }
 

@@ -15,6 +15,8 @@ namespace GlitchHunter.Constant
         public static Action<bool> OnShootingInput;
         public static Action<bool> OnZoomInput;
         public static Action<bool> OnWeaponReloadInput;
+        public static Action<bool> OnFKeyInputGet;
+        public static Action<bool> OnQKeyInputGet;
         public static Action OnSwitchController;
 
         //UI
@@ -39,6 +41,8 @@ namespace GlitchHunter.Constant
         public static Action<MeleeAttackState> OnAttackStateChange;
 
         public static Action<int> OnCollectKey;
+
+        public static Action<Transform, bool> OnSpawnCollectable;
 
         public static ControllerType CurrentControllerType = ControllerType.FIRST_PERSON;
 

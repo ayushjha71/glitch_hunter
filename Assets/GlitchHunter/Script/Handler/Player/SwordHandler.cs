@@ -1,6 +1,7 @@
 using GlitchHunter.Constant;
 using GlitchHunter.Enum;
 using GlitchHunter.Handler.Enemy;
+using GlitchHunter.Interface;
 using GlitchHunter.Manager;
 using UnityEngine;
 
@@ -11,7 +12,7 @@ namespace GlitchHunter.Handler.Player
         [SerializeField]
         private float damangeAmount = 50;
 
-        private EnemyHealthHandler mEnemyHealth;
+        private IDamageable damageable;
 
         private void Update()
         {
@@ -25,20 +26,20 @@ namespace GlitchHunter.Handler.Player
         {
             if (other.gameObject.CompareTag("Target"))
             {
-                mEnemyHealth = other.gameObject.GetComponent<EnemyHealthHandler>();
+                damageable = other.gameObject.GetComponent<IDamageable>();
 
-                if(mEnemyHealth != null)
+                if(damageable != null)
                 {
-                    mEnemyHealth.TakeDamage(damangeAmount);
+                    damageable.Damage(damangeAmount);
                 }
             }
         }
 
         private void OnTriggerExit(Collider other)
         {
-            if(mEnemyHealth != null)
+            if(damageable != null)
             {
-                mEnemyHealth = null;
+                damageable = null;
             }
         }
 

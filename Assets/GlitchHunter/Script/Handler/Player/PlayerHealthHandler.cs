@@ -68,6 +68,17 @@ namespace GlitchHunter.Handler
              GameManager.Instance.EndGame();
         }
 
+        public void Heal(float healAmount)
+        {
+            currentHealth += healAmount;
+            GlitchHunterConstant.OnUpdateHealthSlider?.Invoke(currentHealth);
+        }
+
+        public bool CanHeal()
+        {
+            return currentHealth < maxHealth;
+        }
+
         public bool IsDead()
         {
              return isDead;

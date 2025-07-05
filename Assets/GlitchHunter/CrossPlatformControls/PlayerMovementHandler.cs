@@ -211,14 +211,18 @@ namespace GlitchHunter.Handler.Player
 
         private void OnReceivedJumpInput(bool input)
         {
-            // If flying is active or trying to activate, let flying handler handle it
+            // Only handle jumping for ground-based movement
+            // Let flying handler handle its own jump input
             if (mFlyingHandler != null && (mFlyingHandler.IsFlying() || mFlyingHandler.WantsToFly()))
             {
                 return;
             }
 
-            // Only process jump if grounded
-            if (!Grounded) return;
+            // Only allow jumping when grounded and not flying
+            if (!Grounded)
+            {
+                return;
+            }
 
             // For ground jumping, we want the button press, not hold
             if (input && !mCanJump)

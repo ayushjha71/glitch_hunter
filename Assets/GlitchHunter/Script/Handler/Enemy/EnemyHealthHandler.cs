@@ -1,11 +1,13 @@
+using GlitchHunter.Constant;
 using GlitchHunter.Enum;
+using GlitchHunter.Interface;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
 namespace GlitchHunter.Handler.Enemy
 {
-    public class EnemyHealthHandler : MonoBehaviour
+    public class EnemyHealthHandler : MonoBehaviour, IDamageable
     {
         [SerializeField] private EnemyType type;
         [SerializeField] private float maxHealth = 100f;
@@ -26,19 +28,6 @@ namespace GlitchHunter.Handler.Enemy
             mCurrentHealth = maxHealth;
         }
 
-        public void TakeDamage(float damage)
-        {
-            if (isDead) return;
-
-            mCurrentHealth -= damage;
-            Debug.Log($"NPC took {damage} damage. Current health: {mCurrentHealth}");
-
-            if (mCurrentHealth <= 1)
-            {
-                Die();
-            }
-        }
-
         private void Die()
         {
             audioSource.clip = deadAudioClip;
@@ -57,7 +46,7 @@ namespace GlitchHunter.Handler.Enemy
             {
                 case EnemyType.SHOOTING:
                     {
-                       
+                        GlitchHunterConstant.OnSpawnCollectable?.Invoke(transform, false);
                     }
                     break;
                 case EnemyType.Guard:
@@ -74,14 +63,27 @@ namespace GlitchHunter.Handler.Enemy
             {
                 Instantiate(deadEffect, transform.position, transform.rotation);
             }
-            yield return new WaitForSeconds(5);
-            DeadEffectBaseOnEnemyType(type);
+            yield return new WaitForSeconds(3);
             Destroy(deadEffect);
+            DeadEffectBaseOnEnemyType(type);
         }
 
         public bool IsDead()
         {
             return isDead;
+        }
+
+        public void Damage(float damage)
+        {
+            if (isDead) return;
+
+            mCurrentHealth -= damage;
+            Debug.Log($"NPC took {damage} damage. Current health: {mCurrentHealth}");
+
+            if (mCurrentHealth <= 1)
+            {
+                Die();
+            }
         }
     }
 }

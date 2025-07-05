@@ -252,6 +252,7 @@ GameObject:
   - component: {fileID: 5557136966625399937}
   - component: {fileID: 4141820345641321034}
   - component: {fileID: 4836439583575194323}
+  - component: {fileID: 691101657147570405}
   m_Layer: 7
   m_Name: PlayerFollowCamera
   m_TagString: MainCamera
@@ -402,6 +403,21 @@ MonoBehaviour:
   layerMask:
     serializedVersion: 2
     m_Bits: 1
+--- !u!114 &691101657147570405
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5691272583935127991}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6dabafab327a9914fa0a2671251cdc1b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shakeDuration: 0.5
+  shakeMagnitude: 0.2
+  dampingSpeed: 1
 --- !u!1 &5811940520822496465
 GameObject:
   m_ObjectHideFlags: 0
@@ -421,6 +437,7 @@ GameObject:
   - component: {fileID: 8713746305635647569}
   - component: {fileID: 4646391611307107973}
   - component: {fileID: 3289968737379192188}
+  - component: {fileID: 7252485206379024675}
   m_Layer: 7
   m_Name: ThirdPersonPlayer
   m_TagString: Untagged
@@ -598,7 +615,7 @@ MonoBehaviour:
   crossHair: {fileID: 2377182979125576380}
   damage: 50
   range: 200
-  fireRate: 0.1
+  fireRate: 2
   maxAmmo: 30
   currentAmmo: 0
   reloadTime: 1
@@ -659,6 +676,18 @@ MonoBehaviour:
   pushFactor: 0.9
   boundaryEffect: {fileID: 0}
   boundarySound: {fileID: 0}
+--- !u!114 &7252485206379024675
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5811940520822496465}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d151b8ea99471f8438045d581a93b403, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7647102446021607274
 GameObject:
   m_ObjectHideFlags: 0
@@ -820,6 +849,10 @@ PrefabInstance:
     - target: {fileID: 4604674521222260145, guid: 1ec64ac604fe42d40b8619b8a831e744, type: 3}
       propertyPath: m_Name
       value: BaseWeapon Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 4604674521222260145, guid: 1ec64ac604fe42d40b8619b8a831e744, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7437216556473187032, guid: 1ec64ac604fe42d40b8619b8a831e744, type: 3}
       propertyPath: m_Enabled

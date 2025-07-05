@@ -1,9 +1,8 @@
 using UnityEngine;
-using Unity.Cinemachine;
 using System.Collections;
 using GlitchHunter.Manager;
 using GlitchHunter.Constant;
-using GlitchHunter.Handler.Enemy;
+using GlitchHunter.Interface;
 
 namespace GlitchHunter.Handler
 {
@@ -74,6 +73,7 @@ namespace GlitchHunter.Handler
             GlitchHunterConstant.OnShowPlayerUI += CanStartShooting;
             GlitchHunterConstant.OnShootingInput += OnShootingInputReceived;
             GlitchHunterConstant.OnWeaponReloadInput += OnReloadInputReceived;
+            GlitchHunterConstant.OnZoomInput += OnZoomInput;
         }
 
         private void OnDisable()
@@ -81,6 +81,7 @@ namespace GlitchHunter.Handler
             GlitchHunterConstant.OnShowPlayerUI -= CanStartShooting;
             GlitchHunterConstant.OnShootingInput -= OnShootingInputReceived;
             GlitchHunterConstant.OnWeaponReloadInput -= OnReloadInputReceived;
+            GlitchHunterConstant.OnZoomInput -= OnZoomInput;
         }
 
         private void Update()
@@ -131,7 +132,7 @@ namespace GlitchHunter.Handler
 
         private void HandleShooting()
         {
-            if (_isReloading || !canShoot)
+            if (_isReloading || !canShoot || !GameManager.Instance.IsEquipped)
                 return;
 
             // Auto fire when holding mouse button
@@ -169,7 +170,7 @@ namespace GlitchHunter.Handler
             // Raycast
             if (Physics.Raycast(_playerCamera.transform.position, _playerCamera.transform.forward, out RaycastHit hit, range, shootableMask))
             {
-                hit.transform.GetComponent<EnemyHealthHandler>()?.TakeDamage(damage);
+                hit.transform.GetComponent<IDamageable>()?.Damage(damage);
                 Debug.Log("Hit" + hit.transform.gameObject.name);
 
                 // Play impact effect

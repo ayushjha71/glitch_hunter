@@ -19,6 +19,9 @@ namespace GlitchHunter.Handler.Player
         public bool IsReloadInput { get; private set; }
         public bool IsZoomInput { get; private set; }
 
+        public bool IsFKeyPress { get; private set; }
+        public bool IsQKeyPress { get; private set; }
+
         private void Update()
         {
             // Shooting input
@@ -47,6 +50,30 @@ namespace GlitchHunter.Handler.Player
                 IsControllerSwitch = !IsControllerSwitch;
                 GlitchHunterConstant.CurrentControllerType = IsControllerSwitch ? Enum.ControllerType.FIRST_PERSON : Enum.ControllerType.THIRD_PERSON;
                 GlitchHunterConstant.OnSwitchController?.Invoke();
+            }
+
+            if (Input.GetKeyDown(KeyCode.F))
+            {
+                IsFKeyPress = true;
+                GlitchHunterConstant.OnFKeyInputGet?.Invoke(IsFKeyPress);
+            }
+
+            if(Input.GetKeyUp(KeyCode.F))
+            {
+                IsFKeyPress = false;
+                GlitchHunterConstant.OnFKeyInputGet?.Invoke(IsFKeyPress);
+            }
+
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                IsQKeyPress = true;
+                GlitchHunterConstant.OnQKeyInputGet?.Invoke(IsQKeyPress);
+            }
+
+            if (Input.GetKeyUp(KeyCode.Q))
+            {
+                IsQKeyPress = false;
+                GlitchHunterConstant.OnQKeyInputGet?.Invoke(IsQKeyPress);
             }
 
             // Reload input
