@@ -1,10 +1,11 @@
 using GlitchHunter.Constant;
 using GlitchHunter.Enum;
+using GlitchHunter.Handler.Player;
 using GlitchHunter.Manager;
 using UnityEngine;
 
 
-namespace GlitchHunter.Handler.Player
+namespace GlitchHunter.Handler.Camera
 {
     public class CameraMovementHandler : MonoBehaviour
     {
@@ -80,7 +81,7 @@ namespace GlitchHunter.Handler.Player
             mCamera.rotation = Quaternion.identity;
             mSmoothPivotOffset = pivotOffset;
             mSmoothCamOffset = camOffset;
-            mDefaultFOV = mCamera.GetComponent<Camera>().fieldOfView;
+            mDefaultFOV = mCamera.GetComponent<UnityEngine.Camera>().fieldOfView;
             ResetTargetOffsets();
             ResetFOV();
             ResetMaxVerticalAngle();
@@ -149,7 +150,7 @@ namespace GlitchHunter.Handler.Player
             Quaternion aimRotation = Quaternion.Euler(-mAngleVertical, mAngleHorizontal, 0);
             mCamera.rotation = aimRotation;
 
-            mCamera.GetComponent<Camera>().fieldOfView = Mathf.Lerp(mCamera.GetComponent<Camera>().fieldOfView, mTargetFOV, Time.deltaTime);
+            mCamera.GetComponent<UnityEngine.Camera>().fieldOfView = Mathf.Lerp(mCamera.GetComponent<UnityEngine.Camera>().fieldOfView, mTargetFOV, Time.deltaTime);
 
             Vector3 baseTempPosition = cameraFollowTarget.position + camYRotation * mTargetPivotOffset;
             Vector3 noCollisionOffset = mTargetCamOffset;
@@ -240,7 +241,7 @@ namespace GlitchHunter.Handler.Player
             if (GlitchHunterConstant.CurrentControllerType == ControllerType.THIRD_PERSON)
             {
                 pivotOffset = new Vector3(0, 0, .8f);
-                mCamera.GetComponent<Camera>().nearClipPlane = 0.1f;
+                mCamera.GetComponent<UnityEngine.Camera>().nearClipPlane = 0.1f;
                 GlitchHunterConstant.CurrentControllerType = ControllerType.THIRD_PERSON;
                 playerMovementHandler.SetAvatarLayer(LayerMask.NameToLayer("Player"));
             }
@@ -248,7 +249,7 @@ namespace GlitchHunter.Handler.Player
             else if (GlitchHunterConstant.CurrentControllerType == ControllerType.FIRST_PERSON)
             {
                 pivotOffset = new Vector3(0, 0, 0);
-                mCamera.GetComponent<Camera>().nearClipPlane = 0.3f;
+                mCamera.GetComponent<UnityEngine.Camera>().nearClipPlane = 0.3f;
                 GlitchHunterConstant.CurrentControllerType = ControllerType.FIRST_PERSON;
                 playerMovementHandler.SetAvatarLayer(LayerMask.NameToLayer("LocalPlayer"));
             }

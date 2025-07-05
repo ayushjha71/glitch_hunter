@@ -28,6 +28,8 @@ namespace GlitchHunter.Constant
         public static Action<string> OnUpdateReloadStatus;
         public static Action OnGameOver;
 
+        public static Action<int> OnAddAmmo;
+
         //Audio
         public static Action<int> OnChangeBgAudio;
 

@@ -23,7 +23,7 @@ namespace GlitchHunter.Handler.Player
         [SerializeField] private float MaxDescentSpeed = 8.0f;
 
         private CharacterController mController;
-        private Camera mPlayerCamera;
+        private UnityEngine.Camera mPlayerCamera;
         private PlayerMovementHandler mMovementHandler;
 
         private bool mIsFlying = false;
@@ -45,7 +45,7 @@ namespace GlitchHunter.Handler.Player
         {
             mController = GetComponent<CharacterController>();
             mMovementHandler = GetComponent<PlayerMovementHandler>();
-            mPlayerCamera = Camera.main;
+            mPlayerCamera = UnityEngine.Camera.main;
         }
 
         private void Start()

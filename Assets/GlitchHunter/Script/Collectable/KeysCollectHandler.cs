@@ -35,8 +35,8 @@ namespace GlitchHunter.Handler
                     float distance = Vector3.Distance(transform.position, collider.transform.position);
 
                     // Check if this key is in front of the player using dot product
-                    Vector3 directionToKey = (collider.transform.position - Camera.main.transform.position).normalized;
-                    float dot = Vector3.Dot(Camera.main.transform.forward, directionToKey);
+                    Vector3 directionToKey = (collider.transform.position - UnityEngine.Camera.main.transform.position).normalized;
+                    float dot = Vector3.Dot(UnityEngine.Camera.main.transform.forward, directionToKey);
 
                     // Only consider keys that are somewhat in front of the player (dot > 0.3 means roughly 70 degree cone)
                     if (dot > 0.3f && distance < closestDistance)
@@ -88,7 +88,7 @@ namespace GlitchHunter.Handler
 
             // Draw forward direction
             Gizmos.color = Color.blue;
-            Gizmos.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * pickUpRange);
+            Gizmos.DrawRay(UnityEngine.Camera.main.transform.position, UnityEngine.Camera.main.transform.forward * pickUpRange);
         }
     }
 }

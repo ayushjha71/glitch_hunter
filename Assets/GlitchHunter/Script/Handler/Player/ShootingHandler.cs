@@ -56,24 +56,36 @@ namespace GlitchHunter.Handler
         private bool mReloadInput = false;
         private bool mZoomInput = false;
 
-        private Camera _playerCamera;
+        private UnityEngine.Camera _playerCamera;
         private Coroutine _reloadCoroutine;
+
+        [Header("Ammo Inventory")]
+        [Tooltip("Maximum ammo player can carry")]
+        public int maxAmmoInventory = 120;
+        [Tooltip("Current ammo in inventory")]
+        public int currentAmmoInventory = 30;
 
         private void Awake()
         {
-            _playerCamera = Camera.main;
+            _playerCamera = UnityEngine.Camera.main;
             currentAmmo = maxAmmo;
+            // Initialize UI - show magazine ammo (current/max) and total inventory
+          //  GlitchHunterConstant.OnUpdateAmmoUI?.Invoke(currentAmmo, maxAmmo);
+            GlitchHunterConstant.OnUpdateAmmoUI?.Invoke(currentAmmoInventory, maxAmmoInventory);
         }
 
         private void OnEnable()
         {
             _isReloading = false;
-            GlitchHunterConstant.OnUpdateAmmoUI?.Invoke(currentAmmo, maxAmmo);
+            // Update both UIs when enabled
+          //  GlitchHunterConstant.OnUpdateAmmoUI?.Invoke(currentAmmo, maxAmmo);
+            GlitchHunterConstant.OnUpdateAmmoUI?.Invoke(currentAmmoInventory, maxAmmoInventory);
             GlitchHunterConstant.OnUpdateReloadStatus?.Invoke("Attack");
             GlitchHunterConstant.OnShowPlayerUI += CanStartShooting;
             GlitchHunterConstant.OnShootingInput += OnShootingInputReceived;
             GlitchHunterConstant.OnWeaponReloadInput += OnReloadInputReceived;
             GlitchHunterConstant.OnZoomInput += OnZoomInput;
+            GlitchHunterConstant.OnAddAmmo += AddAmmoToInventory;
         }
 
         private void OnDisable()
@@ -82,6 +94,7 @@ namespace GlitchHunter.Handler
             GlitchHunterConstant.OnShootingInput -= OnShootingInputReceived;
             GlitchHunterConstant.OnWeaponReloadInput -= OnReloadInputReceived;
             GlitchHunterConstant.OnZoomInput -= OnZoomInput;
+            GlitchHunterConstant.OnAddAmmo -= AddAmmoToInventory;
         }
 
         private void Update()
@@ -121,14 +134,59 @@ namespace GlitchHunter.Handler
             canShoot = isShoot;
         }
 
+        private void UpdateAmmoUI()
+        {
+            // Shows: Current Magazine / Total Inventory
+            GlitchHunterConstant.OnUpdateAmmoUI?.Invoke(currentAmmo, currentAmmoInventory);
+        }
+
         private void StartReload()
         {
+            // Only reload if we have ammo in inventory and magazine isn't full
+            if (_isReloading || currentAmmo == maxAmmo || currentAmmoInventory <= 0)
+                return;
+
             if (_reloadCoroutine != null)
-            {
                 StopCoroutine(_reloadCoroutine);
-            }
+
             _reloadCoroutine = StartCoroutine(Reload());
         }
+
+        private IEnumerator Reload()
+        {
+            _isReloading = true;
+            GlitchHunterConstant.OnUpdateReloadStatus?.Invoke("Reloading...");
+
+            float elapsedTime = 0f;
+            while (elapsedTime < reloadTime)
+            {
+                elapsedTime += Time.deltaTime;
+                GlitchHunterConstant.OnReloadSliderValue?.Invoke(elapsedTime / reloadTime);
+                yield return null;
+            }
+
+            // Calculate ammo to transfer from inventory to magazine
+            int ammoNeeded = maxAmmo - currentAmmo;
+            int ammoToTransfer = Mathf.Min(ammoNeeded, currentAmmoInventory);
+
+            currentAmmo += ammoToTransfer;
+            currentAmmoInventory -= ammoToTransfer;
+
+            _isReloading = false;
+            UpdateAmmoUI();
+            GlitchHunterConstant.OnUpdateReloadStatus?.Invoke("Attack");
+        }
+
+        private void AddAmmoToInventory(int amount)
+        {
+            // Only add if we have space
+            if (currentAmmoInventory < maxAmmoInventory)
+            {
+                currentAmmoInventory = Mathf.Min(currentAmmoInventory + amount, maxAmmoInventory);
+                UpdateAmmoUI();
+            }
+        }
+
 
         private void HandleShooting()
         {
@@ -145,19 +203,20 @@ namespace GlitchHunter.Handler
 
         private void Shoot()
         {
-            crossHair.SetScale(CrosshairScale.Shoot, 1);
             if (currentAmmo <= 0)
             {
-                if (!_isReloading)
-                {
+                if (!_isReloading && currentAmmoInventory > 0)
                     StartReload();
-                }
                 return;
             }
 
-            // Use ammo
             currentAmmo--;
-            GlitchHunterConstant.OnUpdateAmmoUI?.Invoke(currentAmmo, maxAmmo);
+            UpdateAmmoUI();
+
+            //// Use ammo
+            //currentAmmo--;
+            //// Update magazine ammo UI
+            //GlitchHunterConstant.OnUpdateAmmoUI?.Invoke(currentAmmo, maxAmmo);
 
             // Play muzzle flash
             if (muzzleFlash != null)
@@ -182,34 +241,11 @@ namespace GlitchHunter.Handler
             }
         }
 
-        private IEnumerator Reload()
-        {
-            _isReloading = true;
-            crossHair.SetScale(CrosshairScale.Default, 1);
-            // Show reload UI
-            GlitchHunterConstant.OnUpdateReloadStatus?.Invoke("Reloading...");
-            float elapsedTime = 0f;
-
-            while (elapsedTime < reloadTime)
-            {
-                elapsedTime += Time.deltaTime;
-                float progress = elapsedTime / reloadTime;
-                GlitchHunterConstant.OnReloadSliderValue?.Invoke(progress);
-                yield return null;
-            }
-
-            // Complete reload
-            currentAmmo = maxAmmo;
-            _isReloading = false;
-            GlitchHunterConstant.OnUpdateAmmoUI?.Invoke(currentAmmo, maxAmmo);
-            GlitchHunterConstant.OnUpdateReloadStatus?.Invoke("Attack");
-        }
-
         private void HandleZoom()
         {
             // Smooth zoom transition
             float targetFOV = mZoomInput ? zoomFOV : normalFOV;
-            Camera.main.fieldOfView = Mathf.Lerp(Camera.main.fieldOfView, targetFOV, zoomSpeed * Time.deltaTime);
+            UnityEngine.Camera.main.fieldOfView = Mathf.Lerp(UnityEngine.Camera.main.fieldOfView, targetFOV, zoomSpeed * Time.deltaTime);
         }
     }
 }

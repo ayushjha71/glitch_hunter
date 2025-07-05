@@ -30,7 +30,7 @@ namespace GlitchHunter.Handler
                 rotationHandler.enabled = false;
             }
 
-            camTransform = Camera.main.transform;
+            camTransform = UnityEngine.Camera.main.transform;
             gunContainerTransform = GameManager.Instance.PlayerPrefab.GetComponentInParent<GunContainer>().GunContainers.transform;
 
             transform.SetParent(gunContainerTransform);
