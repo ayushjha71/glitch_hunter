@@ -16,7 +16,7 @@ namespace GlitchHunter.Handler.Enemy
         {
             if (spawner != null)
             {
-                spawner.OnEnemyDestroyed(gameObject);
+                //spawner.OnEnemyDestroyed(gameObject);
             }
         }
     }

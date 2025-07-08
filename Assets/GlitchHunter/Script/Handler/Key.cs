@@ -1,3 +1,4 @@
+using GlitchHunter.Handler.Enemy;
 using GlitchHunter.Manager;
 using UnityEngine;
 
@@ -14,16 +15,16 @@ namespace GlitchHunter.Handler
             mAudioSource = GetComponent<AudioSource>(); 
         }
 
-        public void Initialize(EnemySpawnManager enemySpawner, int wave)
+        public void Initialize(EnemySpawnManager enemySpawner)
         {
             spawner = enemySpawner;
-            waveIndex = wave;
+           // waveIndex = wave;
         }
 
         public void OnCollectKey()
         {
             mAudioSource.Play();
-            spawner.OnKeyCollected(waveIndex);
+          //  spawner.OnKeyCollected(waveIndex);
             Destroy(gameObject);
         }
     }

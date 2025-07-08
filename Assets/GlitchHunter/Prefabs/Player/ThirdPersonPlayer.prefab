@@ -418,6 +418,7 @@ MonoBehaviour:
   shakeDuration: 0.5
   shakeMagnitude: 0.2
   dampingSpeed: 1
+  cameraShakeTransform: {fileID: 2607517802419304481}
 --- !u!1 &5811940520822496465
 GameObject:
   m_ObjectHideFlags: 0
@@ -628,6 +629,8 @@ MonoBehaviour:
   muzzleFlash: {fileID: 8865077464205873500, guid: 2c22462a5cdded445a7007ed80c482b9, type: 3}
   muzzleFlashTransform: {fileID: 3704452717748345702}
   impactEffect: {fileID: 5300778849037655449, guid: 84a441c483a047148a65cad89ea8e0e1, type: 3}
+  maxAmmoInventory: 120
+  currentAmmoInventory: 30
 --- !u!114 &8713746305635647569
 MonoBehaviour:
   m_ObjectHideFlags: 0

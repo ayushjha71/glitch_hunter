@@ -1,9 +1,10 @@
-using GlitchHunter.Constant;
-using GlitchHunter.Enum;
 using GlitchHunter.Interface;
+using GlitchHunter.Constant;
+using GlitchHunter.Manager;
 using System.Collections;
-using UnityEngine;
+using GlitchHunter.Enum;
 using UnityEngine.AI;
+using UnityEngine;
 
 namespace GlitchHunter.Handler.Enemy
 {
@@ -16,6 +17,8 @@ namespace GlitchHunter.Handler.Enemy
         [SerializeField] private AudioClip deadAudioClip;
         [SerializeField] private AudioSource audioSource;
 
+        public EnemyTypeData enemyType { get; private set; }
+        private EnemySpawnManager spawnManager;
 
         private float mCurrentHealth;
         private bool isDead = false;
@@ -26,6 +29,12 @@ namespace GlitchHunter.Handler.Enemy
         private void Start()
         {
             mCurrentHealth = maxHealth;
+        }
+
+        public void Initialize(EnemySpawnManager manager)
+        {
+            spawnManager = manager;
+            // You'll need to set enemyType reference here based on your setup
         }
 
         private void Die()
@@ -59,7 +68,8 @@ namespace GlitchHunter.Handler.Enemy
 
         private IEnumerator DeadEffect()
         {
-            if(deadEffect != null)
+            spawnManager.OnEnemyDeath(enemyType, gameObject);
+            if (deadEffect != null)
             {
                 Instantiate(deadEffect, transform.position, transform.rotation);
             }

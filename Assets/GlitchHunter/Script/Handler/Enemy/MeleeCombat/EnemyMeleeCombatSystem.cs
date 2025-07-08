@@ -11,7 +11,7 @@ namespace GlitchHunter.Handler.Enemy.MeleeCombat
         [SerializeField] private Animator animator;
         [SerializeField] private EnemyHealthHandler enemyHealth;
         [SerializeField] private EnemyMovementHandler enemyMovement;
-        [SerializeField] private SphericalMovement sphericalMovement;
+      //  [SerializeField] private SphericalMovement sphericalMovement;
 
         [Header("Attack Settings")]
         [SerializeField] private float attackRange = 2f;
@@ -71,7 +71,7 @@ namespace GlitchHunter.Handler.Enemy.MeleeCombat
             if (playerInAttackRange && isAletMode)
             {
                 isAletMode = false;
-                sphericalMovement.StartMoving();
+                //sphericalMovement.StartMoving();
             }
 
             CheckPlayerPositions();
