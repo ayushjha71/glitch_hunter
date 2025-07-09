@@ -67,16 +67,10 @@ namespace GlitchHunter.Manager
                 mGameTime += Time.deltaTime;
             }
 
-            if(mGameTime >= 180)
-            {
-                IsMeleeCombatStarted = true;
-            }
-
-            if (mGameTime >= gameDuration)
-            {
-                EndGame();
-                return;
-            }
+            //if(mGameTime >= 180)
+            //{
+            //    IsMeleeCombatStarted = true;
+            //}
         }
 
         private void SpawnPlayer()

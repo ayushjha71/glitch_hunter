@@ -43,7 +43,7 @@ namespace GlitchHunter.Constant
         public static Action<MeleeAttackState> OnAttackStateChange;
 
         //Key
-        public static Action<int> OnCollectKey;
+        public static Action OnSpawnedChildren;
 
         public static Action<Transform, bool> OnSpawnCollectable;
 

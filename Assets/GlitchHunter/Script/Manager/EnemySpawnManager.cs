@@ -15,6 +15,7 @@ namespace GlitchHunter.Manager
         public float spawnInterval = 1f;      // Time between spawns for this type
         [HideInInspector] public int spawnedCount; // How many have been spawned
         [HideInInspector] public int killedCount;  // How many have been killed
+        [HideInInspector] public bool halfKilledEventTriggered = false;
     }
 
     [System.Serializable]
@@ -161,6 +162,14 @@ namespace GlitchHunter.Manager
         {
             enemyType.killedCount++;
             activeEnemies.Remove(enemy);
+
+            // Check if half of this enemy type has been killed
+            if (!enemyType.halfKilledEventTriggered && enemyType.killedCount >= Mathf.CeilToInt(enemyType.totalCount / 2f))
+            {
+                enemyType.halfKilledEventTriggered = true;
+                //Spawn Children prefab 
+                GlitchHunterConstant.OnSpawnedChildren?.Invoke();
+            }
 
             // Play death effect
             if (waves[currentWaveIndex].enemyDestroyEffect != null)
