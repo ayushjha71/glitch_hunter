@@ -32,7 +32,7 @@ namespace GlitchHunter.Handler
             if (isDead) return;
 
             currentHealth -= damage;
-           // Debug.Log($"Player took {damage} damage. Current health: {currentHealth}");
+           Debug.Log($"Player took {damage} damage. Current health: {currentHealth}");
             GlitchHunterConstant.OnUpdateHealthSlider?.Invoke(currentHealth);
 
             if (currentHealth <= 0)
